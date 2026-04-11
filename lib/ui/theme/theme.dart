@@ -12,12 +12,20 @@ class AppColors {
   static Color background = const Color(0xFFFFFFFF);
   static Color neutralLight = const Color(0xFF74777F);
 
-  static Color get backgroundColor {
+  static Color get backgroundColorMain {
     return AppColors.background;
   }
 
-  static Color get text {
+  static Color get backgroundPrimary {
     return AppColors.primary;
+  }
+
+  static Color get textPrimary {
+    return AppColors.primary;
+  }
+
+  static Color get textBody {
+    return AppColors.background;
   }
 
   static Color get textLight {
@@ -35,8 +43,8 @@ class AppColors {
 class AppTextStyles {
   static TextStyle heading = TextStyle(
     fontSize: 40,
-    fontWeight: FontWeight.w500,
-    color: AppColors.text,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
   );
 
   static TextStyle title = TextStyle(
@@ -47,8 +55,8 @@ class AppTextStyles {
 
   static TextStyle body = TextStyle(
     fontSize: 30,
-    fontWeight: FontWeight.w400,
-    color: AppColors.text,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textBody,
   );
 
   static TextStyle label = TextStyle(
@@ -58,7 +66,7 @@ class AppTextStyles {
   );
 }
 
-class BlaSpacings {
+class AppSpacings {
   static const double s = 12;
   static const double m = 16;
   static const double l = 24;
