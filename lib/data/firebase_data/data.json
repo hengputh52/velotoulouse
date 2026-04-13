@@ -1,0 +1,332 @@
+{
+  "users": {
+    "user_1681234567890": {
+      "id": "user_1681234567890",
+      "email": "alice.martin@gmail.com",
+      "displayName": "Alice Martin",
+      "createdAt": "2024-01-15T10:30:00.000Z"
+    },
+    "user_1681234567891": {
+      "id": "user_1681234567891",
+      "email": "bob.dubois@gmail.com",
+      "displayName": "Bob Dubois",
+      "createdAt": "2024-01-20T14:45:00.000Z"
+    },
+    "user_1681234567892": {
+      "id": "user_1681234567892",
+      "email": "clara.rousseau@gmail.com",
+      "displayName": "Clara Rousseau",
+      "createdAt": "2024-02-05T09:15:00.000Z"
+    },
+    "user_1681234567893": {
+      "id": "user_1681234567893",
+      "email": "david.bernard@gmail.com",
+      "displayName": "David Bernard",
+      "createdAt": "2024-02-10T11:20:00.000Z"
+    }
+  },
+  "locations": {
+    "loc_1": {
+      "id": "loc_1",
+      "latitude": 43.6047,
+      "longitude": 1.4442,
+      "address": "Place du Capitole",
+      "city": "Toulouse"
+    },
+    "loc_2": {
+      "id": "loc_2",
+      "latitude": 43.6108,
+      "longitude": 1.4442,
+      "address": "Rue de Metz",
+      "city": "Toulouse"
+    },
+    "loc_3": {
+      "id": "loc_3",
+      "latitude": 43.5963,
+      "longitude": 1.4544,
+      "address": "Gare Matabiau",
+      "city": "Toulouse"
+    },
+    "loc_4": {
+      "id": "loc_4",
+      "latitude": 43.6315,
+      "longitude": 1.4668,
+      "address": "Université Paul Sabatier",
+      "city": "Toulouse"
+    },
+    "loc_5": {
+      "id": "loc_5",
+      "latitude": 43.5855,
+      "longitude": 1.4507,
+      "address": "Parc de la Reynerie",
+      "city": "Toulouse"
+    }
+  },
+  "stations": {
+    "station_1": {
+      "id": "station_1",
+      "locationId": "loc_1",
+      "name": "Station Capitole",
+      "location": {
+        "id": "loc_1",
+        "latitude": 43.6047,
+        "longitude": 1.4442,
+        "address": "Place du Capitole",
+        "city": "Toulouse"
+      }
+    },
+    "station_2": {
+      "id": "station_2",
+      "locationId": "loc_2",
+      "name": "Station Rue de Metz",
+      "location": {
+        "id": "loc_2",
+        "latitude": 43.6108,
+        "longitude": 1.4442,
+        "address": "Rue de Metz",
+        "city": "Toulouse"
+      }
+    },
+    "station_3": {
+      "id": "station_3",
+      "locationId": "loc_3",
+      "name": "Station Gare Matabiau",
+      "location": {
+        "id": "loc_3",
+        "latitude": 43.5963,
+        "longitude": 1.4544,
+        "address": "Gare Matabiau",
+        "city": "Toulouse"
+      }
+    },
+    "station_4": {
+      "id": "station_4",
+      "locationId": "loc_4",
+      "name": "Station UPS",
+      "location": {
+        "id": "loc_4",
+        "latitude": 43.6315,
+        "longitude": 1.4668,
+        "address": "Université Paul Sabatier",
+        "city": "Toulouse"
+      }
+    },
+    "station_5": {
+      "id": "station_5",
+      "locationId": "loc_5",
+      "name": "Station Reynerie",
+      "location": {
+        "id": "loc_5",
+        "latitude": 43.5855,
+        "longitude": 1.4507,
+        "address": "Parc de la Reynerie",
+        "city": "Toulouse"
+      }
+    }
+  },
+  "slots": {
+    "slot_1_1": {
+      "id": "slot_1_1",
+      "stationId": "station_1",
+      "slotNumber": 1,
+      "isAvailable": true
+    },
+    "slot_1_2": {
+      "id": "slot_1_2",
+      "stationId": "station_1",
+      "slotNumber": 2,
+      "isAvailable": true
+    },
+    "slot_1_3": {
+      "id": "slot_1_3",
+      "stationId": "station_1",
+      "slotNumber": 3,
+      "isAvailable": false
+    },
+    "slot_1_4": {
+      "id": "slot_1_4",
+      "stationId": "station_1",
+      "slotNumber": 4,
+      "isAvailable": true
+    },
+    "slot_1_5": {
+      "id": "slot_1_5",
+      "stationId": "station_1",
+      "slotNumber": 5,
+      "isAvailable": false
+    },
+    "slot_2_1": {
+      "id": "slot_2_1",
+      "stationId": "station_2",
+      "slotNumber": 1,
+      "isAvailable": true
+    },
+    "slot_2_2": {
+      "id": "slot_2_2",
+      "stationId": "station_2",
+      "slotNumber": 2,
+      "isAvailable": true
+    },
+    "slot_2_3": {
+      "id": "slot_2_3",
+      "stationId": "station_2",
+      "slotNumber": 3,
+      "isAvailable": true
+    },
+    "slot_3_1": {
+      "id": "slot_3_1",
+      "stationId": "station_3",
+      "slotNumber": 1,
+      "isAvailable": false
+    },
+    "slot_3_2": {
+      "id": "slot_3_2",
+      "stationId": "station_3",
+      "slotNumber": 2,
+      "isAvailable": true
+    },
+    "slot_4_1": {
+      "id": "slot_4_1",
+      "stationId": "station_4",
+      "slotNumber": 1,
+      "isAvailable": true
+    },
+    "slot_4_2": {
+      "id": "slot_4_2",
+      "stationId": "station_4",
+      "slotNumber": 2,
+      "isAvailable": true
+    },
+    "slot_5_1": {
+      "id": "slot_5_1",
+      "stationId": "station_5",
+      "slotNumber": 1,
+      "isAvailable": true
+    }
+  },
+  "payments": {
+    "payment_1681234567890": {
+      "id": "payment_1681234567890",
+      "userId": "user_1681234567890",
+      "amount": 2.0,
+      "method": "card",
+      "status": "success",
+      "purpose": "singleTicket",
+      "createdAt": "2024-03-01T08:00:00.000Z"
+    },
+    "payment_1681234567891": {
+      "id": "payment_1681234567891",
+      "userId": "user_1681234567891",
+      "amount": 15.0,
+      "method": "mobileMoney",
+      "status": "success",
+      "purpose": "dayPass",
+      "createdAt": "2024-03-02T09:30:00.000Z"
+    },
+    "payment_1681234567892": {
+      "id": "payment_1681234567892",
+      "userId": "user_1681234567892",
+      "amount": 45.0,
+      "method": "card",
+      "status": "success",
+      "purpose": "monthlyPass",
+      "createdAt": "2024-03-03T10:15:00.000Z"
+    },
+    "payment_1681234567893": {
+      "id": "payment_1681234567893",
+      "userId": "user_1681234567893",
+      "amount": 120.0,
+      "method": "card",
+      "status": "success",
+      "purpose": "annualPass",
+      "createdAt": "2024-03-04T11:45:00.000Z"
+    },
+    "payment_1681234567894": {
+      "id": "payment_1681234567894",
+      "userId": "user_1681234567890",
+      "amount": 2.0,
+      "method": "mobileMoney",
+      "status": "success",
+      "purpose": "singleTicket",
+      "createdAt": "2024-03-05T14:20:00.000Z"
+    }
+  },
+  "passes": {
+    "pass_1": {
+      "id": "pass_1",
+      "userId": "user_1681234567891",
+      "paymentId": "payment_1681234567891",
+      "type": "day",
+      "purchasedAt": "2024-03-02T09:30:00.000Z",
+      "expiresAt": "2024-03-03T09:30:00.000Z"
+    },
+    "pass_2": {
+      "id": "pass_2",
+      "userId": "user_1681234567892",
+      "paymentId": "payment_1681234567892",
+      "type": "monthly",
+      "purchasedAt": "2024-03-03T10:15:00.000Z",
+      "expiresAt": "2024-04-02T10:15:00.000Z"
+    },
+    "pass_3": {
+      "id": "pass_3",
+      "userId": "user_1681234567893",
+      "paymentId": "payment_1681234567893",
+      "type": "annual",
+      "purchasedAt": "2024-03-04T11:45:00.000Z",
+      "expiresAt": "2025-03-04T11:45:00.000Z"
+    }
+  },
+  "bookings": {
+    "booking_1681234567890": {
+      "id": "booking_1681234567890",
+      "userId": "user_1681234567890",
+      "bikeSlotId": "slot_1_1",
+      "stationId": "station_1",
+      "paymentId": "payment_1681234567890",
+      "passId": null,
+      "status": "completed",
+      "bookedAt": "2024-03-01T08:00:00.000Z"
+    },
+    "booking_1681234567891": {
+      "id": "booking_1681234567891",
+      "userId": "user_1681234567891",
+      "bikeSlotId": "slot_2_1",
+      "stationId": "station_2",
+      "paymentId": null,
+      "passId": "pass_1",
+      "status": "confirmed",
+      "bookedAt": "2024-03-02T09:30:00.000Z"
+    },
+    "booking_1681234567892": {
+      "id": "booking_1681234567892",
+      "userId": "user_1681234567892",
+      "bikeSlotId": "slot_3_2",
+      "stationId": "station_3",
+      "paymentId": null,
+      "passId": "pass_2",
+      "status": "confirmed",
+      "bookedAt": "2024-03-03T10:15:00.000Z"
+    },
+    "booking_1681234567893": {
+      "id": "booking_1681234567893",
+      "userId": "user_1681234567893",
+      "bikeSlotId": "slot_4_1",
+      "stationId": "station_4",
+      "paymentId": null,
+      "passId": "pass_3",
+      "status": "confirmed",
+      "bookedAt": "2024-03-04T11:45:00.000Z"
+    },
+    "booking_1681234567894": {
+      "id": "booking_1681234567894",
+      "userId": "user_1681234567890",
+      "bikeSlotId": "slot_1_2",
+      "stationId": "station_1",
+      "paymentId": "payment_1681234567894",
+      "passId": null,
+      "status": "cancelled",
+      "bookedAt": "2024-03-05T14:20:00.000Z"
+    }
+  }
+}
