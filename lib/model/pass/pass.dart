@@ -1,4 +1,4 @@
-enum PassType { dayPass, monthlyPass, annualPass }
+enum PassType { day, monthly, annual }
 
 class Pass {
   final String id;
@@ -19,16 +19,21 @@ class Pass {
 
   bool get isActive => DateTime.now().isBefore(expiresAt);
 
+  int get daysLeft {
+    if (!isActive) return 0;
+    return expiresAt.difference(DateTime.now()).inDays + 1;
+  }
+
   Duration get validityDuration {
     switch (type) {
-      case PassType.dayPass:
+      case PassType.day:
         return const Duration(days: 1);
-      case PassType.monthlyPass:
+      case PassType.monthly:
         return const Duration(days: 30);
-      case PassType.annualPass:
+      case PassType.annual:
         return const Duration(days: 365);
     }
   }
 
-  
+
 }
