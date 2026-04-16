@@ -3,6 +3,10 @@
         android:label="velotoulouse"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+   <!-- api key android sdk google map -->
+          <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBdhcOQjP9o0KtpKGwtQijcJQdrt4bSkJw"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

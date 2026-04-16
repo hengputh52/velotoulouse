@@ -38,9 +38,9 @@ dependencies:
   provider: ^6.1.5+1
   
   # Firebase
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.14.0
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
+  cloud_firestore: ^6.3.0
   
   # Dependency Injection
   get_it: ^7.6.0
@@ -49,11 +49,12 @@ dependencies:
   go_router: ^13.0.1
   
   # Maps
-  google_maps_flutter: ^2.5.3
+  google_maps_flutter: ^2.17.0
   
   # Local Storage
   shared_preferences: ^2.2.2
   http: ^1.6.0
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

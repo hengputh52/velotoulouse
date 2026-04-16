@@ -20,5 +20,13 @@
   <string>????</string>
   <key>CFBundleVersion</key>
   <string>1.0</string>
+
+
+
+  <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to show nearby bike stations</string>
+    
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location to show nearby bike stations</string>
 </dict>
 </plist>
