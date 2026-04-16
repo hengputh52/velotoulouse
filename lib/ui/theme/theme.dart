@@ -4,63 +4,51 @@ import 'package:flutter/material.dart';
 /// Definition of App colors.
 ///
 class AppColors {
-  // Bellow colors never changes with theme :
   static Color primary = const Color(0xFF1275E2);
   static Color secondary = const Color(0xFF5F78A3);
-
-  //static Color tertiary = const Color(0xFFEC8A2B);
   static Color background = const Color(0xFFFFFFFF);
   static Color neutralLight = const Color(0xFF74777F);
 
-  static Color get backgroundColorMain {
-    return AppColors.background;
-  }
-
-  static Color get backgroundPrimary {
-    return AppColors.primary;
-  }
-
-  static Color get textPrimary {
-    return AppColors.primary;
-  }
-
-  static Color get textBody {
-    return AppColors.background;
-  }
-
-  static Color get textLight {
-    return AppColors.secondary;
-  }
-
-  static Color get labelColor {
-    return AppColors.background;
-  }
+  static Color get backgroundColorMain => AppColors.background;
+  static Color get backgroundPrimary => AppColors.primary;
+  static Color get textPrimary => AppColors.primary;
+  static Color get textBody => AppColors.background;
+  static Color get textLight => AppColors.secondary;
+  static Color get labelColor => AppColors.background;
 }
 
 ///
 /// Definition of App text styles.
 ///
 class AppTextStyles {
-  static TextStyle heading = TextStyle(
-    fontSize: 40,
-    fontWeight: FontWeight.w600,
+  // Non-const version (uses AppColors — fine outside const context)
+  static TextStyle get heading => TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
   );
 
-  static TextStyle title = TextStyle(
+  // Const version for use inside const widgets (e.g. const ListView children)
+  static const TextStyle headingStatic = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF1275E2),
+  );
+
+  static TextStyle get title => TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w400,
     color: AppColors.textLight,
   );
 
-  static TextStyle body = TextStyle(
-    fontSize: 30,
+  static TextStyle get body => TextStyle(
+    fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColors.textBody,
   );
 
-  static TextStyle label = TextStyle(
-    fontSize: 20,
+  static TextStyle get label => TextStyle(
+    fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.labelColor,
   );
@@ -78,7 +66,7 @@ class AppSpacings {
 }
 
 ///
-/// Definition of App Theme.
+/// App Theme
 ///
 ThemeData appTheme = ThemeData(
   fontFamily: 'Inter',

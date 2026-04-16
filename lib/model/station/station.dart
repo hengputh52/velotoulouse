@@ -16,14 +16,16 @@ class Station {
     required this.slots,
     required this.location,
   });
+  bool get hasBikesAvailable => slots.any((s) => s.isAvailable);
 
   int get availableBikes => slots.where((s) => s.isAvailable).length;
 
+  int get totalDocks => slots.length;
   double get latitude => location.latitude;
   double get longitude => location.longitude;
   String? get address => location.address;
 
-
+  int get availableCount => availableBikes;
 }
 
 class BikeSlot {
@@ -39,5 +41,5 @@ class BikeSlot {
     required this.isAvailable,
   });
 
-  
+  bool get canBook => isAvailable;
 }
