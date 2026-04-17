@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:velotoulouse/model/station/station.dart';
+import 'package:velotoulouse/ui/screens/booking/booking_screen.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 
-/// StationDetailScreen — full screen pushed via Navigator.push
-/// Matches the Figma "Station Detail" design (image 3)
-class StationDetailScreen extends StatelessWidget {
+/// StationDetailScreen — full screen (StatefulWidget)
+/// Tracks: selected slot (via swipe or tap) + selected pass type
+class StationDetailScreen extends StatefulWidget {
   final Station station;
   final String distanceText;
 
@@ -13,6 +14,19 @@ class StationDetailScreen extends StatelessWidget {
     required this.station,
     required this.distanceText,
   });
+
+  @override
+  State<StationDetailScreen> createState() => _StationDetailScreenState();
+}
+
+class _StationDetailScreenState extends State<StationDetailScreen> {
+  PassChoice? _selectedPass;
+  BikeSlot? _selectedSlot;
+
+  bool get _canContinue =>
+      _selectedSlot != null &&
+      _selectedSlot!.isAvailable &&
+      _selectedPass != null;
 
   @override
   Widget build(BuildContext context) {
@@ -33,43 +47,53 @@ class StationDetailScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacings.l),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Station name + distance ─────────────────────
-            Text(
-              station.name.toUpperCase(),
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            // ── Name + heart ─────────────────────────────────
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.station.name.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                Icon(Icons.favorite_border, color: Colors.grey.shade400),
+              ],
             ),
-            if (distanceText.isNotEmpty)
+            if (widget.distanceText.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  '$distanceText — from your current location',
+                  '${widget.distanceText} — from your current location',
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
                 ),
               ),
 
             const SizedBox(height: AppSpacings.l),
 
-            // ── Stats row ────────────────────────────────────
+            // ── Stats ────────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _StatBox(
                   icon: Icons.pedal_bike,
-                  count: station.availableCount,
+                  count: widget.station.availableCount,
                   label: 'Available bike',
                 ),
                 Container(width: 1, height: 60, color: Colors.grey.shade200),
                 _StatBox(
-                  icon: Icons.local_parking,
-                  count: station.totalDocks,
+                  count: widget.station.totalDocks,
                   label: 'Available dock',
+                  useParking: true,
                 ),
               ],
             ),
@@ -78,7 +102,7 @@ class StationDetailScreen extends StatelessWidget {
             const Divider(),
             const SizedBox(height: AppSpacings.s),
 
-            // ── Slot list header ─────────────────────────────
+            // ── Slot list ────────────────────────────────────
             Text(
               'Slot No.',
               style: TextStyle(
@@ -89,8 +113,19 @@ class StationDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacings.s),
 
-            // ── Slot rows ────────────────────────────────────
-            ...station.slots.map((slot) => _SlotRow(slot: slot)),
+            ...widget.station.slots.map(
+              (slot) => _SwipeableSlotRow(
+                key: ValueKey(slot.id),
+                slot: slot,
+                isSelected: _selectedSlot?.id == slot.id,
+                onSelected: (s) {
+                  if (!s.isAvailable) return;
+                  setState(() {
+                    _selectedSlot = _selectedSlot?.id == s.id ? null : s;
+                  });
+                },
+              ),
+            ),
 
             const SizedBox(height: AppSpacings.xl),
 
@@ -112,14 +147,22 @@ class StationDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: AppSpacings.m),
 
             _PassOptionRow(
               icon: Icons.confirmation_number_outlined,
               label: 'Single Ticket For a Single Ride',
+              choice: PassChoice.singleTicket,
+              selectedChoice: _selectedPass,
+              onChanged: (c) => setState(() => _selectedPass = c),
             ),
-            _PassOptionRow(icon: Icons.star_border, label: 'Subscription Plan'),
+            _PassOptionRow(
+              icon: Icons.star_border,
+              label: 'Subscription Plan',
+              choice: PassChoice.subscriptionPlan,
+              selectedChoice: _selectedPass,
+              onChanged: (c) => setState(() => _selectedPass = c),
+            ),
 
             const SizedBox(height: AppSpacings.l),
 
@@ -127,20 +170,19 @@ class StationDetailScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: navigate to payment/pass selection
-                },
+                onPressed: _canContinue ? _onContinue : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
+                  disabledBackgroundColor: Colors.grey.shade300,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSpacings.radius),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Continue',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: _canContinue ? Colors.white : Colors.grey.shade500,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -148,8 +190,32 @@ class StationDetailScreen extends StatelessWidget {
               ),
             ),
 
+            if (!_canContinue)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Center(
+                  child: Text(
+                    'Select an available slot and a pass to continue',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                  ),
+                ),
+              ),
+
             const SizedBox(height: AppSpacings.l),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _onContinue() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ConfirmBookingScreen(
+          station: widget.station,
+          slot: _selectedSlot!,
+          passChoice: _selectedPass!,
         ),
       ),
     );
@@ -157,43 +223,127 @@ class StationDetailScreen extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Sub-widgets
+// Swipeable Slot Row
 // ─────────────────────────────────────────────────────────────
 
-class _StatBox extends StatelessWidget {
-  final IconData icon;
-  final int count;
-  final String label;
+class _SwipeableSlotRow extends StatelessWidget {
+  final BikeSlot slot;
+  final bool isSelected;
+  final ValueChanged<BikeSlot> onSelected;
 
-  const _StatBox({
-    required this.icon,
-    required this.count,
-    required this.label,
+  const _SwipeableSlotRow({
+    super.key,
+    required this.slot,
+    required this.isSelected,
+    required this.onSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, size: 32, color: Colors.black87),
-        const SizedBox(height: 4),
-        Text(
-          '$count',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    if (!slot.isAvailable) {
+      // Non-available: not swipeable, shows maintenance + X icon
+      return _SlotContainer(
+        slot: slot,
+        isSelected: false,
+        trailing: Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: Colors.green.shade100,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.close, size: 16, color: Colors.green),
         ),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+      );
+    }
+
+    // Available: swipe left reveals "Release" or tap to select
+    return Dismissible(
+      key: ValueKey('swipe_${slot.id}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) async {
+        onSelected(slot); // select on swipe
+        return false; // don't remove from list
+      },
+      // Revealed background when swiping left
+      background: Container(
+        alignment: Alignment.centerRight,
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(10),
         ),
-      ],
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.pedal_bike, color: Colors.white, size: 18),
+            SizedBox(width: 6),
+            Text(
+              'Release',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () => onSelected(slot),
+        child: _SlotContainer(
+          slot: slot,
+          isSelected: isSelected,
+          trailing: isSelected
+              ? Container(
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF1275E2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, size: 16, color: Colors.white),
+                )
+              : ElevatedButton(
+                  onPressed: () => onSelected(slot),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Release the bike',
+                    style: TextStyle(color: Colors.white, fontSize: 11),
+                  ),
+                ),
+        ),
+      ),
     );
   }
 }
 
-class _SlotRow extends StatelessWidget {
-  final BikeSlot slot;
+// ─────────────────────────────────────────────────────────────
+// Slot Container (shared layout for both available/unavailable)
+// ─────────────────────────────────────────────────────────────
 
-  const _SlotRow({required this.slot});
+class _SlotContainer extends StatelessWidget {
+  final BikeSlot slot;
+  final bool isSelected;
+  final Widget trailing;
+
+  const _SlotContainer({
+    required this.slot,
+    required this.isSelected,
+    required this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -201,13 +351,19 @@ class _SlotRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: isSelected
+            ? const Color(0xFF1275E2).withOpacity(0.06)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isSelected
+              ? const Color(0xFF1275E2).withOpacity(0.5)
+              : Colors.grey.shade200,
+          width: isSelected ? 1.5 : 1,
+        ),
       ),
       child: Row(
         children: [
-          // Slot number
           SizedBox(
             width: 20,
             child: Text(
@@ -216,17 +372,12 @@ class _SlotRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-
-          // Bike icon
           const Icon(Icons.pedal_bike, size: 22, color: Colors.black54),
           const SizedBox(width: 10),
-
-          // Status
           Expanded(
             child: slot.isAvailable
                 ? Row(
                     children: [
-                      // Battery bar (always full since we have no battery % data)
                       Container(
                         width: 50,
                         height: 10,
@@ -257,76 +408,129 @@ class _SlotRow extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
           ),
-
-          // Action button
-          if (slot.isAvailable)
-            ElevatedButton(
-              onPressed: () {
-                // TODO: wire up booking flow
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text(
-                'Release the bike',
-                style: TextStyle(color: Colors.white, fontSize: 11),
-              ),
-            )
-          else
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.close, size: 16, color: Colors.green),
-            ),
+          trailing,
         ],
       ),
     );
   }
 }
 
-class _PassOptionRow extends StatefulWidget {
-  final IconData icon;
-  final String label;
+// ─────────────────────────────────────────────────────────────
+// Stat Box
+// ─────────────────────────────────────────────────────────────
 
-  const _PassOptionRow({required this.icon, required this.label});
+class _StatBox extends StatelessWidget {
+  final IconData? icon;
+  final int count;
+  final String label;
+  final bool useParking;
+
+  const _StatBox({
+    this.icon,
+    required this.count,
+    required this.label,
+    this.useParking = false,
+  });
 
   @override
-  State<_PassOptionRow> createState() => _PassOptionRowState();
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        useParking
+            ? Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Center(
+                  child: Text(
+                    'P',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              )
+            : Icon(icon, size: 32, color: Colors.black87),
+        const SizedBox(height: 4),
+        Text(
+          '$count',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+        ),
+      ],
+    );
+  }
 }
 
-class _PassOptionRowState extends State<_PassOptionRow> {
-  bool _selected = false;
+// ─────────────────────────────────────────────────────────────
+// Pass Option Row (radio group member)
+// ─────────────────────────────────────────────────────────────
+
+class _PassOptionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final PassChoice choice;
+  final PassChoice? selectedChoice;
+  final ValueChanged<PassChoice> onChanged;
+
+  const _PassOptionRow({
+    required this.icon,
+    required this.label,
+    required this.choice,
+    required this.selectedChoice,
+    required this.onChanged,
+  });
+
+  bool get _isSelected => selectedChoice == choice;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => _selected = !_selected),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+      onTap: () => onChanged(choice),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: _isSelected
+              ? const Color(0xFF1275E2).withOpacity(0.06)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: _isSelected
+                ? const Color(0xFF1275E2).withOpacity(0.4)
+                : Colors.grey.shade200,
+          ),
+        ),
         child: Row(
           children: [
-            Icon(widget.icon, size: 20, color: Colors.black54),
+            Icon(
+              icon,
+              size: 20,
+              color: _isSelected ? AppColors.primary : Colors.black54,
+            ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(widget.label, style: const TextStyle(fontSize: 14)),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _isSelected ? AppColors.primary : Colors.black87,
+                  fontWeight: _isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
             ),
-            Radio<bool>(
-              value: true,
-              groupValue: _selected ? true : null,
-              onChanged: (_) => setState(() => _selected = !_selected),
+            Radio<PassChoice>(
+              value: choice,
+              groupValue: selectedChoice,
+              onChanged: (v) => onChanged(v!),
               activeColor: AppColors.primary,
             ),
           ],
