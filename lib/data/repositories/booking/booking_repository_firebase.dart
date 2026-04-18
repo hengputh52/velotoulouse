@@ -74,7 +74,7 @@ class FirebaseBookingRepository implements BookingRepository {
         body: json.encode({'isAvailable': false}),
       );
 
-      return BookingDto.fromJson(bookingData).toModel();
+      return BookingDto.fromJson(bookingId, bookingData);
     } catch (e) {
       rethrow;
     }
@@ -89,8 +89,7 @@ class FirebaseBookingRepository implements BookingRepository {
         Map<String, dynamic> bookingsJson = json.decode(response.body);
 
         for (final entry in bookingsJson.entries) {
-          final bookingDto = BookingDto.fromJson(entry.value);
-          final booking = bookingDto.toModel();
+          final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
           if (booking.userId == userId && booking.status == BookingStatus.confirmed) {
             return booking;

@@ -1,88 +1,46 @@
-import 'package:velotoulouse/model/booking/booking.dart';
-
+import '../../model/booking/booking.dart';
 
 class BookingDto {
-  final String id;
-  final String userId;
-  final String bikeSlotId;
-  final String stationId;
-  final String? paymentId;
-  final String? passId;
-  final String status;
-  final DateTime bookedAt;
+  static const String idKey = 'id';
+  static const String userIdKey = 'userId';
+  static const String bikeSlotIdKey = 'bikeSlotId';
+  static const String stationIdKey = 'stationId';
+  static const String paymentIdKey = 'paymentId';
+  static const String passIdKey = 'passId';
+  static const String statusKey = 'status';
+  static const String bookedAtKey = 'bookedAt';
 
-  const BookingDto({
-    required this.id,
-    required this.userId,
-    required this.bikeSlotId,
-    required this.stationId,
-    this.paymentId,
-    this.passId,
-    required this.status,
-    required this.bookedAt,
-  });
+  static Booking fromJson(String id, Map<String, dynamic> json) {
+    assert(json[idKey] is String);
+    assert(json[userIdKey] is String);
+    assert(json[bikeSlotIdKey] is String);
+    assert(json[stationIdKey] is String);
+    assert(json[statusKey] is String);
+    assert(json[bookedAtKey] is String);
 
-  factory BookingDto.fromJson(Map<String, dynamic> json) {
-    return BookingDto(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      bikeSlotId: json['bikeSlotId'] as String,
-      stationId: json['stationId'] as String,
-      paymentId: json['paymentId'] as String?,
-      passId: json['passId'] as String?,
-      status: json['status'] as String,
-      bookedAt: _parseDateTime(json['bookedAt']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'bikeSlotId': bikeSlotId,
-      'stationId': stationId,
-      'paymentId': paymentId,
-      'passId': passId,
-      'status': status,
-      'bookedAt': bookedAt.toIso8601String(),
-    };
-  }
-
-  Booking toModel() {
     return Booking(
-      id: id,
-      userId: userId,
-      bikeSlotId: bikeSlotId,
-      stationId: stationId,
-      paymentId: paymentId,
-      passId: passId,
-      status: BookingStatus.values.byName(status),
-      bookedAt: bookedAt,
+      id: json[idKey],
+      userId: json[userIdKey],
+      bikeSlotId: json[bikeSlotIdKey],
+      stationId: json[stationIdKey],
+      paymentId: json[paymentIdKey] as String?,
+      passId: json[passIdKey] as String?,
+      status: BookingStatus.values.byName(json[statusKey]),
+      bookedAt: DateTime.parse(json[bookedAtKey]),
     );
   }
 
-  factory BookingDto.fromModel(Booking model) {
-    return BookingDto(
-      id: model.id,
-      userId: model.userId,
-      bikeSlotId: model.bikeSlotId,
-      stationId: model.stationId,
-      paymentId: model.paymentId,
-      passId: model.passId,
-      status: model.status.name,
-      bookedAt: model.bookedAt,
-    );
-  }
-
-  static DateTime _parseDateTime(dynamic data) {
-    if (data == null) return DateTime.now();
-    if (data is DateTime) return data;
-    if (data is String) return DateTime.parse(data);
-    if (data is Map && data['_seconds'] != null) {
-      return DateTime.fromMillisecondsSinceEpoch(
-        (data['_seconds'] as int) * 1000,
-      );
-    }
-    return DateTime.now();
+  /// Convert Booking to JSON
+  static Map<String, dynamic> toJson(Booking booking) {
+    return {
+      idKey: booking.id,
+      userIdKey: booking.userId,
+      bikeSlotIdKey: booking.bikeSlotId,
+      stationIdKey: booking.stationId,
+      paymentIdKey: booking.paymentId,
+      passIdKey: booking.passId,
+      statusKey: booking.status.name,
+      bookedAtKey: booking.bookedAt.toIso8601String(),
+    };
   }
 }

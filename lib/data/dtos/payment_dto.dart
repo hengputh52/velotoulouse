@@ -1,81 +1,44 @@
-import 'package:velotoulouse/model/payment/payment.dart';
+import '../../model/payment/payment.dart';
 
 class PaymentDto {
-  final String id;
-  final String userId;
-  final double amount;
-  final String method;
-  final String status;
-  final String purpose;
-  final DateTime createdAt;
+  static const String idKey = 'id';
+  static const String userIdKey = 'userId';
+  static const String amountKey = 'amount';
+  static const String methodKey = 'method';
+  static const String statusKey = 'status';
+  static const String purposeKey = 'purpose';
+  static const String createdAtKey = 'createdAt';
 
-  const PaymentDto({
-    required this.id,
-    required this.userId,
-    required this.amount,
-    required this.method,
-    required this.status,
-    required this.purpose,
-    required this.createdAt,
-  });
+  static Payment fromJson(String id, Map<String, dynamic> json) {
+    assert(json[idKey] is String);
+    assert(json[userIdKey] is String);
+    assert(json[amountKey] is num);
+    assert(json[methodKey] is String);
+    assert(json[statusKey] is String);
+    assert(json[purposeKey] is String);
+    assert(json[createdAtKey] is String);
 
-  factory PaymentDto.fromJson(Map<String, dynamic> json) {
-    return PaymentDto(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      method: json['method'] as String,
-      status: json['status'] as String,
-      purpose: json['purpose'] as String,
-      createdAt: _parseDateTime(json['createdAt']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'amount': amount,
-      'method': method,
-      'status': status,
-      'purpose': purpose,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
-
-  Payment toModel() {
     return Payment(
-      id: id,
-      userId: userId,
-      amount: amount,
-      method: PaymentMethod.values.byName(method),
-      status: PaymentStatus.values.byName(status),
-      purpose: PaymentPurpose.values.byName(purpose),
-      createdAt: createdAt,
+      id: json[idKey],
+      userId: json[userIdKey],
+      amount: (json[amountKey] as num).toDouble(),
+      method: PaymentMethod.values.byName(json[methodKey]),
+      status: PaymentStatus.values.byName(json[statusKey]),
+      purpose: PaymentPurpose.values.byName(json[purposeKey]),
+      createdAt: DateTime.parse(json[createdAtKey]),
     );
   }
 
-  factory PaymentDto.fromModel(Payment model) {
-    return PaymentDto(
-      id: model.id,
-      userId: model.userId,
-      amount: model.amount,
-      method: model.method.name,
-      status: model.status.name,
-      purpose: model.purpose.name,
-      createdAt: model.createdAt,
-    );
-  }
-
-  static DateTime _parseDateTime(dynamic data) {
-    if (data == null) return DateTime.now();
-    if (data is DateTime) return data;
-    if (data is String) return DateTime.parse(data);
-    if (data is Map && data['_seconds'] != null) {
-      return DateTime.fromMillisecondsSinceEpoch(
-        (data['_seconds'] as int) * 1000,
-      );
-    }
-    return DateTime.now();
+  /// Convert Payment to JSON
+  static Map<String, dynamic> toJson(Payment payment) {
+    return {
+      idKey: payment.id,
+      userIdKey: payment.userId,
+      amountKey: payment.amount,
+      methodKey: payment.method.name,
+      statusKey: payment.status.name,
+      purposeKey: payment.purpose.name,
+      createdAtKey: payment.createdAt.toIso8601String(),
+    };
   }
 }

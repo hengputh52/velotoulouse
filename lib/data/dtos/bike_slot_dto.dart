@@ -1,51 +1,32 @@
-import 'package:velotoulouse/model/station/station.dart';
+import '../../model/station/station.dart';
 
 class BikeSlotDto {
-  final String id;
-  final String stationId;
-  final int slotNumber;
-  final bool isAvailable;
+  static const String idKey = 'id';
+  static const String stationIdKey = 'stationId';
+  static const String slotNumberKey = 'slotNumber';
+  static const String isAvailableKey = 'isAvailable';
 
-  const BikeSlotDto({
-    required this.id,
-    required this.stationId,
-    required this.slotNumber,
-    required this.isAvailable,
-  });
+  static BikeSlot fromJson(String id, Map<String, dynamic> json) {
+    assert(json[idKey] is String);
+    assert(json[stationIdKey] is String);
+    assert(json[slotNumberKey] is int);
+    assert(json[isAvailableKey] is bool);
 
-  factory BikeSlotDto.fromJson(Map<String, dynamic> json) {
-    return BikeSlotDto(
-      id: json['id'] as String,
-      stationId: json['stationId'] as String,
-      slotNumber: json['slotNumber'] as int,
-      isAvailable: json['isAvailable'] as bool? ?? false,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'stationId': stationId,
-      'slotNumber': slotNumber,
-      'isAvailable': isAvailable,
-    };
-  }
-
-  BikeSlot toModel() {
     return BikeSlot(
-      id: id,
-      stationId: stationId,
-      slotNumber: slotNumber,
-      isAvailable: isAvailable,
+      id: json[idKey],
+      stationId: json[stationIdKey],
+      slotNumber: json[slotNumberKey],
+      isAvailable: json[isAvailableKey],
     );
   }
 
-  factory BikeSlotDto.fromModel(BikeSlot model) {
-    return BikeSlotDto(
-      id: model.id,
-      stationId: model.stationId,
-      slotNumber: model.slotNumber,
-      isAvailable: model.isAvailable,
-    );
+  /// Convert BikeSlot to JSON
+  static Map<String, dynamic> toJson(BikeSlot slot) {
+    return {
+      idKey: slot.id,
+      stationIdKey: slot.stationId,
+      slotNumberKey: slot.slotNumber,
+      isAvailableKey: slot.isAvailable,
+    };
   }
 }

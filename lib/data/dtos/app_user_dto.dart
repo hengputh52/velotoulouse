@@ -1,64 +1,31 @@
-import 'package:velotoulouse/model/user/user.dart';
+import '../../model/user/user.dart';
 
 class AppUserDto {
-  final String id;
-  final String email;
-  final String? displayName;
-  final DateTime createdAt;
+  static const String idKey = 'id';
+  static const String emailKey = 'email';
+  static const String displayNameKey = 'displayName';
+  static const String createdAtKey = 'createdAt';
 
-  const AppUserDto({
-    required this.id,
-    required this.email,
-    this.displayName,
-    required this.createdAt,
-  });
+  static AppUser fromJson(String id, Map<String, dynamic> json) {
+    assert(json[idKey] is String);
+    assert(json[emailKey] is String);
+    assert(json[createdAtKey] is String);
 
-  factory AppUserDto.fromJson(Map<String, dynamic> json) {
-    return AppUserDto(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      displayName: json['displayName'] as String?,
-      createdAt: _parseDateTime(json['createdAt']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-      'displayName': displayName,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
-
-  AppUser toModel() {
     return AppUser(
-      id: id,
-      email: email,
-      displayName: displayName,
-      createdAt: createdAt,
+      id: json[idKey],
+      email: json[emailKey],
+      displayName: json[displayNameKey] as String?,
+      createdAt: DateTime.parse(json[createdAtKey]),
     );
   }
 
-  factory AppUserDto.fromModel(AppUser model) {
-    return AppUserDto(
-      id: model.id,
-      email: model.email,
-      displayName: model.displayName,
-      createdAt: model.createdAt,
-    );
-  }
-
-  static DateTime _parseDateTime(dynamic data) {
-    if (data == null) return DateTime.now();
-    if (data is DateTime) return data;
-    if (data is String) return DateTime.parse(data);
-    // Handle Firestore Timestamp
-    if (data is Map && data['_seconds'] != null) {
-      return DateTime.fromMillisecondsSinceEpoch(
-        (data['_seconds'] as int) * 1000,
-      );
-    }
-    return DateTime.now();
+  /// Convert AppUser to JSON
+  static Map<String, dynamic> toJson(AppUser user) {
+    return {
+      idKey: user.id,
+      emailKey: user.email,
+      displayNameKey: user.displayName,
+      createdAtKey: user.createdAt.toIso8601String(),
+    };
   }
 }

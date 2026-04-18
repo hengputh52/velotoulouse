@@ -28,7 +28,7 @@ class FirebaseAuthRepository implements AuthRepository {
           final userData = entry.value as Map<String, dynamic>;
           if (userData['email'] == email) {
             // In production, verify password (for mock, we just check email)
-            _currentUser = AppUserDto.fromJson(userData).toModel();
+            _currentUser = AppUserDto.fromJson(entry.key, userData);
             return _currentUser;
           }
         }
@@ -42,14 +42,14 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> registerWithEmail(String email, String password) async {
+  Future<AppUser> registerWithEmail(String displayName,String email, String password) async {
     try {
       final now = DateTime.now();
       final userId = 'user_${DateTime.now().millisecondsSinceEpoch}';
       final userData = {
         'id': userId,
         'email': email,
-        'displayName': email.split('@')[0],
+        'displayName': displayName,
         'createdAt': now.toIso8601String(),
       };
 
@@ -62,7 +62,7 @@ class FirebaseAuthRepository implements AuthRepository {
         body: json.encode(userData),
       );
 
-      _currentUser = AppUserDto.fromJson(userData).toModel();
+      _currentUser = AppUserDto.fromJson(userId, userData);
       return _currentUser!;
     } catch (e) {
       rethrow;
