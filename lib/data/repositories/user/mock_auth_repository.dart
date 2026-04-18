@@ -22,12 +22,12 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> registerWithEmail(String email, String password) async {
+  Future<AppUser> registerWithEmail(String displayName,String email, String password) async {
     await Future.delayed(const Duration(milliseconds: 600));
     _currentUser = AppUser(
       id: 'user_${DateTime.now().millisecondsSinceEpoch}',
       email: email,
-      displayName: email.split('@')[0],
+      displayName: displayName,
       createdAt: DateTime.now(),
     );
     return _currentUser!;

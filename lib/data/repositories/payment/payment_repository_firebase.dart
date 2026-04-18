@@ -58,7 +58,7 @@ class FirebasePaymentRepository implements PaymentRepository {
         body: json.encode(paymentData),
       );
 
-      return PaymentDto.fromJson(paymentData).toModel();
+      return PaymentDto.fromJson(paymentId, paymentData);
     } catch (e) {
       rethrow;
     }
@@ -74,8 +74,7 @@ class FirebasePaymentRepository implements PaymentRepository {
         List<Payment> result = [];
 
         for (final entry in paymentsJson.entries) {
-          final paymentDto = PaymentDto.fromJson(entry.value);
-          final payment = paymentDto.toModel();
+          final payment = PaymentDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
           if (payment.userId == userId) {
             result.add(payment);

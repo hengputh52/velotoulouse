@@ -19,8 +19,7 @@ class FirebasePassRepository implements PassRepository {
         Map<String, dynamic> passesJson = json.decode(response.body);
 
         for (final entry in passesJson.entries) {
-          final passDto = PassDto.fromJson(entry.value);
-          final pass = passDto.toModel();
+          final pass = PassDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
           if (pass.userId == userId && pass.isActive) {
             return pass;
@@ -45,8 +44,7 @@ class FirebasePassRepository implements PassRepository {
         List<Pass> result = [];
 
         for (final entry in passesJson.entries) {
-          final passDto = PassDto.fromJson(entry.value);
-          final pass = passDto.toModel();
+          final pass = PassDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
           if (pass.userId == userId) {
             result.add(pass);
@@ -91,7 +89,7 @@ class FirebasePassRepository implements PassRepository {
         body: json.encode(passData),
       );
 
-      return PassDto.fromJson(passData).toModel();
+      return PassDto.fromJson(passId, passData);
     } catch (e) {
       rethrow;
     }

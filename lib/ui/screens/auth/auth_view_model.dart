@@ -12,6 +12,7 @@ class AuthViewModel extends ChangeNotifier {
   bool _isLoginMode = true;
   bool _obscurePassword = true;
 
+  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
@@ -22,6 +23,7 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoginMode => _isLoginMode;
   bool get obscurePassword => _obscurePassword;
 
+  TextEditingController get displayNameController => _displayNameController;
   TextEditingController get emailController => _emailController;
   TextEditingController get passwordController => _passwordController;
   TextEditingController get nameController => _nameController;
@@ -103,6 +105,7 @@ class AuthViewModel extends ChangeNotifier {
         }
       } else {
         _currentUser = await _authRepository.registerWithEmail(
+          _nameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text,
         );
