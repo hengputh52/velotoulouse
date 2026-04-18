@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 // import 'dart:math';
 
 // class Location {
@@ -39,6 +40,8 @@
 // }
 import 'dart:math';
 
+=======
+>>>>>>> Stashed changes
 class Location {
   final String id;
   final double latitude;
