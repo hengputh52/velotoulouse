@@ -9,7 +9,7 @@ class PaymentViewModel extends ChangeNotifier {
   final PaymentRepository _paymentRepository;
   final PassRepository _passRepository;
 
-  ViewState _state = ViewState.idle;
+  ViewState _state = ViewState.loading;
   PaymentMethod _selectedMethod = PaymentMethod.card;
   Payment? _completedPayment;
   String? _errorMessage;
@@ -39,7 +39,7 @@ class PaymentViewModel extends ChangeNotifier {
     _purpose = purpose;
     _amount = amount;
     _pendingSlotId = slotId;
-    _state = ViewState.idle;
+    _state = ViewState.loading;
     _errorMessage = null;
     notifyListeners();
   }

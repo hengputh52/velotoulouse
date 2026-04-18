@@ -1,4 +1,14 @@
-enum PassType { day, monthly, annual }
+enum PassType {
+  day('24h', 'Valid for 24 hours from activation', 1.50),
+  monthly('30 days', 'Valid for 30 days from activation', 15.00),
+  annual('1 year', 'Valid for 365 days from activation', 99.00);
+
+  final String duration;
+  final String description;
+  final double price;
+
+  const PassType(this.duration, this.description, this.price);
+}
 
 class Pass {
   final String id;

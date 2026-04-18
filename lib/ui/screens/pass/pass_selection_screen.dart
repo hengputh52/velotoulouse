@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_content.dart';
-import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
+import 'package:velotoulouse/ui/screens/pass_selection_view_model/pass_selection_view_model.dart';
 
 class PassSelectionScreen extends StatelessWidget {
   const PassSelectionScreen({super.key});

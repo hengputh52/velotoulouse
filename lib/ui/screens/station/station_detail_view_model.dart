@@ -6,7 +6,7 @@ import 'package:velotoulouse/ui/states/view_state.dart';
 class StationDetailViewModel extends ChangeNotifier {
   final StationRepository _stationRepository;
 
-  ViewState _state = ViewState.idle;
+  ViewState _state = ViewState.loading;
   Station? _station;
   String? _errorMessage;
   String? _selectedSlotId;
