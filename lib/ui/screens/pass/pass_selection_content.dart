@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
-import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
+import 'package:velotoulouse/ui/screens/pass_selection_view_model/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/active_pass_banner.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/pass_price_tag.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/pass_type_card.dart';
@@ -72,14 +72,9 @@ class PassSelectionContent extends StatelessWidget {
                             children: [
                               PassTypeCard(
                                 type: type,
-                                price:
-                                    PassSelectionViewModel.prices[type] ?? 0,
-                                description:
-                                    PassSelectionViewModel.descriptions[type] ??
-                                        '',
-                                duration:
-                                    PassSelectionViewModel.durations[type] ??
-                                        '',
+                                price: type.price,
+                                description: type.description,
+                                duration: type.duration,
                                 isSelected: isSelected,
                                 isCurrentPlan: isCurrentPlan,
                                 onTap: () => vm.selectPassType(type),
@@ -122,8 +117,7 @@ class PassSelectionContent extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             PassPriceTag(
-                              amount:
-                                  PassSelectionViewModel.prices[vm.selectedPassType]!,
+                              amount: vm.selectedPassType!.price,
                               label: 'Total',
                             ),
                             SizedBox(height: AppSpacings.m),

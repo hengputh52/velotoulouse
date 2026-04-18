@@ -1,47 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:velotoulouse/data/repositories/user/user_repository.dart';
 import 'package:velotoulouse/model/user/user.dart';
+import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
+  final AuthState _authState;
 
-  ViewState _state = ViewState.idle;
-  AppUser? _currentUser;
-  String? _errorMessage;
   bool _isLoginMode = true;
   bool _obscurePassword = true;
 
-  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
 
-  ViewState get state => _state;
-  AppUser? get currentUser => _currentUser;
-  String? get errorMessage => _errorMessage;
+  // Getters from global AuthState
+  ViewState get state => _authState.state;
+  AppUser? get currentUser => _authState.currentUser;
+  String? get errorMessage => _authState.errorMessage;
   bool get isLoginMode => _isLoginMode;
   bool get obscurePassword => _obscurePassword;
 
-  TextEditingController get displayNameController => _displayNameController;
   TextEditingController get emailController => _emailController;
   TextEditingController get passwordController => _passwordController;
   TextEditingController get nameController => _nameController;
 
-  AuthViewModel(this._authRepository);
-
-  // Initialize by listening to auth state stream
-  void initAuthListener() {
-    _authRepository.watchAuthState().listen((user) {
-      _currentUser = user;
-      notifyListeners();
-    });
-  }
+  AuthViewModel(this._authRepository, this._authState);
 
   // Toggle between login and register modes
   void toggleMode() {
     _isLoginMode = !_isLoginMode;
-    _errorMessage = null;
+
     _emailController.clear();
     _passwordController.clear();
     _nameController.clear();
@@ -60,19 +50,19 @@ class AuthViewModel extends ChangeNotifier {
     final password = _passwordController.text;
 
     if (!email.contains('@') || !email.contains('.')) {
-      _errorMessage = 'Please enter a valid email address';
+      _authState.setErrorMessage('Please enter a valid email address');
       return false;
     }
 
     if (password.length < 6) {
-      _errorMessage = 'Password must be at least 6 characters';
+      _authState.setErrorMessage('Password must be at least 6 characters');
       return false;
     }
 
     if (!_isLoginMode) {
       final name = _nameController.text.trim();
       if (name.isEmpty) {
-        _errorMessage = 'Please enter your display name';
+        _authState.setErrorMessage('Please enter your display name');
         return false;
       }
     }
@@ -87,33 +77,34 @@ class AuthViewModel extends ChangeNotifier {
       return;
     }
 
-    _state = ViewState.loading;
-    _errorMessage = null;
+    _authState.setState(ViewState.loading);
     notifyListeners();
 
     try {
       if (_isLoginMode) {
-        _currentUser = await _authRepository.signInWithEmail(
+        final user = await _authRepository.signInWithEmail(
           _emailController.text.trim(),
           _passwordController.text,
         );
-        if (_currentUser == null) {
-          _errorMessage = 'No account with that email or incorrect password';
-          _state = ViewState.error;
+        if (user == null) {
+          _authState.setErrorMessage('No account with that email or incorrect password');
+          _authState.setState(ViewState.error);
         } else {
-          _state = ViewState.success;
+          _authState.setCurrentUser(user);
+          _authState.setState(ViewState.success);
         }
       } else {
-        _currentUser = await _authRepository.registerWithEmail(
+        final user = await _authRepository.registerWithEmail(
           _nameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text,
         );
-        _state = ViewState.success;
+        _authState.setCurrentUser(user);
+        _authState.setState(ViewState.success);
       }
     } catch (e) {
-      _errorMessage = _mapErrorMessage(e.toString());
-      _state = ViewState.error;
+      _authState.setErrorMessage(_mapErrorMessage(e.toString()));
+      _authState.setState(ViewState.error);
     }
 
     notifyListeners();
@@ -121,19 +112,18 @@ class AuthViewModel extends ChangeNotifier {
 
   // Sign out
   Future<void> signOut() async {
-    _state = ViewState.loading;
+    _authState.setState(ViewState.loading);
     notifyListeners();
 
     try {
       await _authRepository.signOut();
-      _currentUser = null;
-      _state = ViewState.idle;
+
       _emailController.clear();
       _passwordController.clear();
       _nameController.clear();
     } catch (e) {
-      _errorMessage = 'Failed to sign out';
-      _state = ViewState.error;
+      _authState.setErrorMessage('Failed to sign out');
+      _authState.setState(ViewState.error);
     }
 
     notifyListeners();
