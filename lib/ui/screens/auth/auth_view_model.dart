@@ -35,6 +35,11 @@ class AuthViewModel extends ChangeNotifier {
     _emailController.clear();
     _passwordController.clear();
     _nameController.clear();
+    
+    // Clear error message when switching modes
+    _authState.setErrorMessage(null);
+    _authState.setState(ViewState.idle);
+    
     notifyListeners();
   }
 
@@ -78,6 +83,7 @@ class AuthViewModel extends ChangeNotifier {
     }
 
     _authState.setState(ViewState.loading);
+    _authState.setErrorMessage(null);
     notifyListeners();
 
     try {
@@ -91,7 +97,7 @@ class AuthViewModel extends ChangeNotifier {
           _authState.setState(ViewState.error);
         } else {
           _authState.setCurrentUser(user);
-          _authState.setState(ViewState.success);
+          _authState.setState(ViewState.idle);
         }
       } else {
         final user = await _authRepository.registerWithEmail(
@@ -100,7 +106,7 @@ class AuthViewModel extends ChangeNotifier {
           _passwordController.text,
         );
         _authState.setCurrentUser(user);
-        _authState.setState(ViewState.success);
+        _authState.setState(ViewState.idle);
       }
     } catch (e) {
       _authState.setErrorMessage(_mapErrorMessage(e.toString()));
@@ -121,6 +127,9 @@ class AuthViewModel extends ChangeNotifier {
       _emailController.clear();
       _passwordController.clear();
       _nameController.clear();
+      
+      _authState.reset(); // Reset auth state completely
+      _authState.setState(ViewState.idle);
     } catch (e) {
       _authState.setErrorMessage('Failed to sign out');
       _authState.setState(ViewState.error);

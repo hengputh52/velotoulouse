@@ -7,7 +7,7 @@ import 'package:velotoulouse/ui/states/view_state.dart';
 class PassState extends ChangeNotifier {
   Pass? _activePass;
   PassType? _selectedPassType;
-  ViewState _state = ViewState.loading;
+  ViewState _state = ViewState.idle;
   String? _errorMessage;
 
   // Getters
@@ -38,11 +38,18 @@ class PassState extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void clearSelection() {
     _selectedPassType = null;
     _errorMessage = null;
     notifyListeners();
   }
 
+  // Reset pass state completely
+  void reset() {
+    _activePass = null;
+    _selectedPassType = null;
+    _state = ViewState.idle;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

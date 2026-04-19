@@ -41,13 +41,7 @@ List<InheritedProvider> get devProviders {
         context.read<AuthState>(),
       ),
     ),
-    ChangeNotifierProvider<PassSelectionViewModel>(
-      create: (context) => PassSelectionViewModel(
-        context.read<PassRepository>(),
-        context.read<PaymentRepository>(),
-        context.read<PassState>(),
-      ),
-    ),
+ 
 
 
 

@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:velotoulouse/model/station/station.dart';
+import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
-
-enum PassChoice { singleTicket, subscriptionPlan }
 
 /// ConfirmBookingScreen — pushed from StationDetailScreen after selecting a pass
 /// Matches Figma image 3: bike photo, station info, pass type, start time, confirm
 class ConfirmBookingScreen extends StatelessWidget {
   final Station station;
   final BikeSlot slot;
-  final PassChoice passChoice;
+  final PassType passType;
 
   const ConfirmBookingScreen({
     super.key,
     required this.station,
     required this.slot,
-    required this.passChoice,
+    required this.passType,
   });
 
-  String get _passLabel => passChoice == PassChoice.singleTicket
-      ? 'Single Pass'
-      : 'Subscription Plan';
+  String get _passLabel {
+    return switch (passType) {
+      PassType.single => 'Quick Ride (30 min)',
+      PassType.day => 'Day Pass (24 hours)',
+      PassType.monthly => 'Monthly Plan (30 days)',
+      PassType.annual => 'Annual Plan (1 year)',
+    };
+  }
 
   String get _startTime {
     final now = DateTime.now();
