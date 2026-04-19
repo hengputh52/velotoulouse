@@ -100,10 +100,10 @@ class PaymentViewModel extends ChangeNotifier {
   // Helper: Map PaymentPurpose to PassType
   PassType _mapPurposeToPassType(PaymentPurpose purpose) {
     return switch (purpose) {
+      PaymentPurpose.singleTicket => PassType.single,
       PaymentPurpose.dayPass => PassType.day,
       PaymentPurpose.monthlyPass => PassType.monthly,
       PaymentPurpose.annualPass => PassType.annual,
-      _ => PassType.day,
     };
   }
 

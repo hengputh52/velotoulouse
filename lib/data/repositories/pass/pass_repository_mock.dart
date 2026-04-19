@@ -47,6 +47,7 @@ class MockPassRepository implements PassRepository {
     await Future.delayed(const Duration(milliseconds: 600));
     final now = DateTime.now();
     final Duration validity = switch (type) {
+      PassType.single => const Duration(minutes: 30),
       PassType.day => const Duration(days: 1),
       PassType.monthly => const Duration(days: 30),
       PassType.annual => const Duration(days: 365),

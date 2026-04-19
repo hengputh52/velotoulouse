@@ -1,5 +1,6 @@
 enum PassType {
-  day('24h', 'Valid for 24 hours from activation', 1.50),
+  single('30 min', 'Valid for 30 minutes from activation', 2.00),
+  day('24h', 'Valid for 24 hours from activation', 5.00),
   monthly('30 days', 'Valid for 30 days from activation', 15.00),
   annual('1 year', 'Valid for 365 days from activation', 99.00);
 
@@ -36,6 +37,8 @@ class Pass {
 
   Duration get validityDuration {
     switch (type) {
+      case PassType.single:
+        return const Duration(minutes: 30);
       case PassType.day:
         return const Duration(days: 1);
       case PassType.monthly:

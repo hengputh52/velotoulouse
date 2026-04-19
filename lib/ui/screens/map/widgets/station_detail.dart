@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velotoulouse/model/station/station.dart';
+import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/ui/screens/booking/booking_screen.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 
@@ -20,7 +21,7 @@ class StationDetailScreen extends StatefulWidget {
 }
 
 class _StationDetailScreenState extends State<StationDetailScreen> {
-  PassChoice? _selectedPass;
+  PassType? _selectedPass;
   BikeSlot? _selectedSlot;
 
   bool get _canContinue =>
@@ -149,19 +150,13 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
             ),
             const SizedBox(height: AppSpacings.m),
 
-            _PassOptionRow(
-              icon: Icons.confirmation_number_outlined,
-              label: 'Single Ticket For a Single Ride',
-              choice: PassChoice.singleTicket,
-              selectedChoice: _selectedPass,
-              onChanged: (c) => setState(() => _selectedPass = c),
-            ),
-            _PassOptionRow(
-              icon: Icons.star_border,
-              label: 'Subscription Plan',
-              choice: PassChoice.subscriptionPlan,
-              selectedChoice: _selectedPass,
-              onChanged: (c) => setState(() => _selectedPass = c),
+            // Pass options for all PassType values
+            ...PassType.values.map(
+              (passType) => _PassOptionRow(
+                passType: passType,
+                isSelected: _selectedPass == passType,
+                onChanged: (p) => setState(() => _selectedPass = p),
+              ),
             ),
 
             const SizedBox(height: AppSpacings.l),
@@ -215,7 +210,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
         builder: (_) => ConfirmBookingScreen(
           station: widget.station,
           slot: _selectedSlot!,
-          passChoice: _selectedPass!,
+          passType: _selectedPass!,
         ),
       ),
     );
@@ -475,36 +470,39 @@ class _StatBox extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 
 class _PassOptionRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final PassChoice choice;
-  final PassChoice? selectedChoice;
-  final ValueChanged<PassChoice> onChanged;
+  final PassType passType;
+  final bool isSelected;
+  final ValueChanged<PassType> onChanged;
 
   const _PassOptionRow({
-    required this.icon,
-    required this.label,
-    required this.choice,
-    required this.selectedChoice,
+    required this.passType,
+    required this.isSelected,
     required this.onChanged,
   });
 
-  bool get _isSelected => selectedChoice == choice;
+  String _getPassLabel(PassType type) {
+    return switch (type) {
+      PassType.single => 'Quick Ride',
+      PassType.day => 'Day Pass',
+      PassType.monthly => 'Monthly Plan',
+      PassType.annual => 'Annual Plan',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onChanged(choice),
+      onTap: () => onChanged(passType),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: _isSelected
+          color: isSelected
               ? const Color(0xFF1275E2).withOpacity(0.06)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _isSelected
+            color: isSelected
                 ? const Color(0xFF1275E2).withOpacity(0.4)
                 : Colors.grey.shade200,
           ),
@@ -512,24 +510,36 @@ class _PassOptionRow extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              icon,
+              Icons.confirmation_number_outlined,
               size: 20,
-              color: _isSelected ? AppColors.primary : Colors.black54,
+              color: isSelected ? AppColors.primary : Colors.black54,
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: _isSelected ? AppColors.primary : Colors.black87,
-                  fontWeight: _isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _getPassLabel(passType),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isSelected ? AppColors.primary : Colors.black87,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                  Text(
+                    '${passType.duration} • €${passType.price.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Radio<PassChoice>(
-              value: choice,
-              groupValue: selectedChoice,
+            Radio<PassType>(
+              value: passType,
+              groupValue: isSelected ? passType : null,
               onChanged: (v) => onChanged(v!),
               activeColor: AppColors.primary,
             ),

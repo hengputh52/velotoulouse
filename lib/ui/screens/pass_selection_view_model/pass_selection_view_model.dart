@@ -7,36 +7,37 @@ import 'package:velotoulouse/ui/states/pass_state.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 
 class PassSelectionViewModel extends ChangeNotifier {
-  final PassRepository _passRepository;
-  final PaymentRepository _paymentRepository;
-  final PassState _passState;
+  final PassRepository passRepository;
+  final PaymentRepository paymentRepository;
+  final PassState passState;
 
   // Getters from global PassState
-  ViewState get state => _passState.state;
-  PassType? get selectedPassType => _passState.selectedPassType;
-  Pass? get activePass => _passState.activePass;
-  String? get errorMessage => _passState.errorMessage;
-  bool get hasActivePass => _passState.hasActivePass;
+  ViewState get state => passState.state;
+  PassType? get selectedPassType => passState.selectedPassType;
+  Pass? get activePass => passState.activePass;
+  String? get errorMessage => passState.errorMessage;
+  bool get hasActivePass => passState.hasActivePass;
 
-  PassSelectionViewModel(
-    this._passRepository,
-    this._paymentRepository,
-    this._passState,
+  PassSelectionViewModel({
+    required this.passRepository,
+    required this.paymentRepository,
+    required this.passState,
+  }
   );
 
   // Load active pass for user
   Future<void> loadActivePass(String userId) async {
-    _passState.setState(ViewState.loading);
+    passState.setState(ViewState.loading);
 
     notifyListeners();
 
     try {
-      final pass = await _passRepository.getActivePass(userId);
-      _passState.setActivePass(pass);
-      _passState.setState(ViewState.success);
+      final pass = await passRepository.getActivePass(userId);
+      passState.setActivePass(pass);
+      passState.setState(ViewState.success);
     } catch (e) {
-      _passState.setErrorMessage('Failed to load active pass: ${e.toString()}');
-      _passState.setState(ViewState.error);
+      passState.setErrorMessage('Failed to load active pass: ${e.toString()}');
+      passState.setState(ViewState.error);
     }
 
     notifyListeners();
@@ -44,12 +45,12 @@ class PassSelectionViewModel extends ChangeNotifier {
 
   // Select a pass type
   void selectPassType(PassType type) {
-    if (_passState.hasActivePass && _passState.activePass!.type == type) {
-      _passState.setErrorMessage('You already have an active ${type.name} pass');
+    if (passState.hasActivePass && passState.activePass!.type == type) {
+      passState.setErrorMessage('You already have an active ${type.name} pass');
       return;
     }
 
-    _passState.setSelectedPassType(type);
+    passState.setSelectedPassType(type);
 
     notifyListeners();
   }
@@ -59,39 +60,40 @@ class PassSelectionViewModel extends ChangeNotifier {
     String userId,
     PaymentMethod method,
   ) async {
-    if (_passState.selectedPassType == null) {
-      _passState.setErrorMessage('Please select a pass type');
+    if (passState.selectedPassType == null) {
+      passState.setErrorMessage('Please select a pass type');
       notifyListeners();
       return null;
     }
 
-    _passState.setState(ViewState.loading);
+    passState.setState(ViewState.loading);
 
     notifyListeners();
 
     try {
-      final amount = _passState.selectedPassType!.price;
-      final payment = await _paymentRepository.processPayment(
+      final amount = passState.selectedPassType!.price;
+      final payment = await paymentRepository.processPayment(
         userId: userId,
         amount: amount,
         method: method,
-        purpose: _mapPassTypeToPurpose(_passState.selectedPassType!),
+        purpose: mapPassTypeToPurpose(passState.selectedPassType!),
       );
 
-      _passState.setState(ViewState.success);
+      passState.setState(ViewState.success);
       notifyListeners();
       return payment;
     } catch (e) {
-      _passState.setErrorMessage('Payment failed: ${e.toString()}');
-      _passState.setState(ViewState.error);
+      passState.setErrorMessage('Payment failed: ${e.toString()}');
+      passState.setState(ViewState.error);
       notifyListeners();
       return null;
     }
   }
 
   // Helper to map PassType to PaymentPurpose
-  PaymentPurpose _mapPassTypeToPurpose(PassType type) {
+  PaymentPurpose mapPassTypeToPurpose(PassType type) {
     return switch (type) {
+      PassType.single => PaymentPurpose.singleTicket,
       PassType.day => PaymentPurpose.dayPass,
       PassType.monthly => PaymentPurpose.monthlyPass,
       PassType.annual => PaymentPurpose.annualPass,

@@ -6,7 +6,7 @@ import 'package:velotoulouse/ui/states/view_state.dart';
 /// Manages current user, auth status, and error messages
 class AuthState extends ChangeNotifier {
   AppUser? _currentUser;
-  ViewState _state = ViewState.loading;
+  ViewState _state = ViewState.idle;
   String? _errorMessage;
 
   // Getters
@@ -31,5 +31,11 @@ class AuthState extends ChangeNotifier {
     notifyListeners();
   }
 
-
+  // Reset auth state completely (on logout)
+  void reset() {
+    _currentUser = null;
+    _state = ViewState.idle;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }
