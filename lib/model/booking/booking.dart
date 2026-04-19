@@ -19,7 +19,10 @@ class Booking {
     this.passId,
     required this.status,
     required this.bookedAt,
-  });
+  }) : assert(
+         (paymentId != null) != (passId != null),
+         'Exactly one of paymentId or passId must be set',
+       );
 
   bool get paidByPass => passId != null;
   bool get paidByTicket => paymentId != null && passId == null;
@@ -27,5 +30,4 @@ class Booking {
   bool get isActive {
     return status == BookingStatus.confirmed;
   }
-
 }

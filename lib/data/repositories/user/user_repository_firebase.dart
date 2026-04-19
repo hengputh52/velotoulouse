@@ -81,7 +81,11 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<AppUser> registerWithEmail(String displayName,String email, String password) async {
+  Future<AppUser> registerWithEmail(
+    String displayName,
+    String email,
+    String password,
+  ) async {
     try {
       print('👥 Registering new user: $email');
       final now = DateTime.now();

@@ -9,7 +9,6 @@ class PassDto {
   static const String expiresAtKey = 'expiresAt';
 
   static Pass fromJson(String id, Map<String, dynamic> json) {
-    assert(json[idKey] is String);
     assert(json[userIdKey] is String);
     assert(json[paymentIdKey] is String);
     assert(json[typeKey] is String);
@@ -17,7 +16,7 @@ class PassDto {
     assert(json[expiresAtKey] is String);
 
     return Pass(
-      id: json[idKey],
+      id: id,
       userId: json[userIdKey],
       paymentId: json[paymentIdKey],
       type: PassType.values.byName(json[typeKey]),

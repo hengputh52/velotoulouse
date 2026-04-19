@@ -21,13 +21,9 @@ class StationDetailScreen extends StatefulWidget {
 }
 
 class _StationDetailScreenState extends State<StationDetailScreen> {
-  PassType? _selectedPass;
   BikeSlot? _selectedSlot;
 
-  bool get _canContinue =>
-      _selectedSlot != null &&
-      _selectedSlot!.isAvailable &&
-      _selectedPass != null;
+  bool get _canContinue => _selectedSlot != null && _selectedSlot!.isAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -130,38 +126,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
 
             const SizedBox(height: AppSpacings.xl),
 
-            // ── Choose Your Pass ─────────────────────────────
-            RichText(
-              text: const TextSpan(
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                ),
-                children: [
-                  TextSpan(text: 'Choose '),
-                  TextSpan(
-                    text: 'Your Pass',
-                    style: TextStyle(color: Color(0xFF1275E2)),
-                  ),
-                  TextSpan(text: ' ?'),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacings.m),
-
-            // Pass options for all PassType values
-            ...PassType.values.map(
-              (passType) => _PassOptionRow(
-                passType: passType,
-                isSelected: _selectedPass == passType,
-                onChanged: (p) => setState(() => _selectedPass = p),
-              ),
-            ),
-
-            const SizedBox(height: AppSpacings.l),
-
-            // ── Continue button ──────────────────────────────
+            // ── Confirm Booking button ──────────────────────────────
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -175,7 +140,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                   ),
                 ),
                 child: Text(
-                  'Continue',
+                  'Proceed to Booking',
                   style: TextStyle(
                     color: _canContinue ? Colors.white : Colors.grey.shade500,
                     fontSize: 16,
@@ -190,7 +155,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Center(
                   child: Text(
-                    'Select an available slot and a pass to continue',
+                    'Select an available slot to continue',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
                   ),
                 ),
@@ -207,10 +172,9 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ConfirmBookingScreen(
-          station: widget.station,
-          slot: _selectedSlot!,
-          passType: _selectedPass!,
+        builder: (_) => BookingScreen(
+          stationId: widget.station.id,
+          bikeSlotId: _selectedSlot!.id,
         ),
       ),
     );
@@ -461,91 +425,6 @@ class _StatBox extends StatelessWidget {
           style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
         ),
       ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Pass Option Row (radio group member)
-// ─────────────────────────────────────────────────────────────
-
-class _PassOptionRow extends StatelessWidget {
-  final PassType passType;
-  final bool isSelected;
-  final ValueChanged<PassType> onChanged;
-
-  const _PassOptionRow({
-    required this.passType,
-    required this.isSelected,
-    required this.onChanged,
-  });
-
-  String _getPassLabel(PassType type) {
-    return switch (type) {
-      PassType.single => 'Quick Ride',
-      PassType.day => 'Day Pass',
-      PassType.monthly => 'Monthly Plan',
-      PassType.annual => 'Annual Plan',
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onChanged(passType),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF1275E2).withOpacity(0.06)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF1275E2).withOpacity(0.4)
-                : Colors.grey.shade200,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.confirmation_number_outlined,
-              size: 20,
-              color: isSelected ? AppColors.primary : Colors.black54,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _getPassLabel(passType),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? AppColors.primary : Colors.black87,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '${passType.duration} • €${passType.price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Radio<PassType>(
-              value: passType,
-              groupValue: isSelected ? passType : null,
-              onChanged: (v) => onChanged(v!),
-              activeColor: AppColors.primary,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

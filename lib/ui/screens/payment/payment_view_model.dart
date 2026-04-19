@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
 import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
@@ -8,6 +9,7 @@ import 'package:velotoulouse/ui/states/view_state.dart';
 class PaymentViewModel extends ChangeNotifier {
   final PaymentRepository _paymentRepository;
   final PassRepository _passRepository;
+  final BookingRepository _bookingRepository;
 
   ViewState _state = ViewState.loading;
   PaymentMethod _selectedMethod = PaymentMethod.card;
@@ -17,6 +19,7 @@ class PaymentViewModel extends ChangeNotifier {
   late PaymentPurpose _purpose;
   late double _amount;
   String? _pendingSlotId;
+  String? _pendingStationId;
 
   ViewState get state => _state;
   PaymentMethod get selectedMethod => _selectedMethod;
@@ -28,6 +31,7 @@ class PaymentViewModel extends ChangeNotifier {
   PaymentViewModel(
     this._paymentRepository,
     this._passRepository,
+    this._bookingRepository,
   );
 
   // Initialize with route parameters
@@ -35,11 +39,13 @@ class PaymentViewModel extends ChangeNotifier {
     required PaymentPurpose purpose,
     required double amount,
     String? slotId,
+    String? stationId,
   }) {
     _purpose = purpose;
     _amount = amount;
     _pendingSlotId = slotId;
-    _state = ViewState.loading;
+    _pendingStationId = stationId;
+    _state = ViewState.idle;
     _errorMessage = null;
     notifyListeners();
   }
@@ -82,10 +88,15 @@ class PaymentViewModel extends ChangeNotifier {
         );
       }
 
-      // Step 3: If slot booking, create booking record
-      if (_pendingSlotId != null) {
-        // Will be implemented when booking is integrated
-        // await _bookingRepository.createBooking(...)
+      // Step 3: If slot booking (single ticket), create booking record
+      if (_pendingSlotId != null && _pendingStationId != null) {
+        await _bookingRepository.createBooking(
+          userId: userId,
+          bikeSlotId: _pendingSlotId!,
+          stationId: _pendingStationId!,
+          paymentId: _completedPayment!.id,
+          passId: null, // Single ticket, not a reusable pass
+        );
       }
 
       _state = ViewState.success;

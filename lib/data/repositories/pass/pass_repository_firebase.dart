@@ -19,7 +19,10 @@ class FirebasePassRepository implements PassRepository {
         Map<String, dynamic> passesJson = json.decode(response.body);
 
         for (final entry in passesJson.entries) {
-          final pass = PassDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
+          final pass = PassDto.fromJson(
+            entry.key,
+            entry.value as Map<String, dynamic>,
+          );
 
           if (pass.userId == userId && pass.isActive) {
             return pass;
@@ -44,7 +47,10 @@ class FirebasePassRepository implements PassRepository {
         List<Pass> result = [];
 
         for (final entry in passesJson.entries) {
-          final pass = PassDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
+          final pass = PassDto.fromJson(
+            entry.key,
+            entry.value as Map<String, dynamic>,
+          );
 
           if (pass.userId == userId) {
             result.add(pass);
@@ -85,7 +91,10 @@ class FirebasePassRepository implements PassRepository {
       };
 
       await http.post(
-        Uri.https('velotoulouse-42876-default-rtdb.firebaseio.com', '/passes/$passId.json'),
+        Uri.https(
+          'velotoulouse-42876-default-rtdb.firebaseio.com',
+          '/passes/$passId.json',
+        ),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(passData),
       );
