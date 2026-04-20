@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
@@ -411,10 +412,12 @@ class _BookingContentState extends State<BookingContent> {
               ),
               SizedBox(height: AppSpacings.m),
 
+              final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
+
               // Single ticket option
               _buildOptionCard(
                 title: 'Single Ticket',
-                price: '€1.50',
+                price: currencyFormatter.format(1.50),
                 duration: '1 ride',
                 onTap: () => _goToPayment(context, 'singleTicket', 1.50),
               ),
@@ -423,7 +426,7 @@ class _BookingContentState extends State<BookingContent> {
               // Day pass option
               _buildOptionCard(
                 title: 'Day Pass',
-                price: '€5.00',
+                price: currencyFormatter.format(5.00),
                 duration: '24 hours',
                 onTap: () => _goToPayment(context, 'dayPass', 5.00),
               ),
@@ -432,7 +435,7 @@ class _BookingContentState extends State<BookingContent> {
               // Monthly pass option
               _buildOptionCard(
                 title: 'Monthly Pass',
-                price: '€15.00',
+                price: currencyFormatter.format(15.00),
                 duration: '30 days',
                 onTap: () => _goToPayment(context, 'monthlyPass', 15.00),
               ),
