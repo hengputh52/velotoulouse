@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
 import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
-import 'package:velotoulouse/ui/screens/pass_selection_view_model/pass_selection_view_model.dart';
+import 'package:velotoulouse/model/payment/payment.dart';
+import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
+import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/active_pass_banner.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/pass_price_tag.dart';
 import 'package:velotoulouse/ui/screens/pass/widgets/pass_type_card.dart';
@@ -14,7 +16,7 @@ import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
 import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
 
-class PassSelectionContent extends StatelessWidget {
+class PassSelectionContent extends StatefulWidget {
   const PassSelectionContent({super.key});
 
   void _navigateToPayment(BuildContext context, PassSelectionViewModel vm) {
@@ -47,6 +49,69 @@ class PassSelectionContent extends StatelessWidget {
         builder: (_) => PaymentScreen(viewModel: paymentVM),
       ),
     );
+  }
+
+  @override
+  State<PassSelectionContent> createState() => _PassSelectionContentState();
+}
+
+class _PassSelectionContentState extends State<PassSelectionContent> {
+  @override
+  void initState() {
+    super.initState();
+    _initializePassSelection();
+  }
+
+  void _initializePassSelection() {
+    final authVM = context.read<AuthViewModel>();
+    final userId = authVM.currentUser?.id ?? '';
+
+    if (userId.isNotEmpty) {
+      final passVM = context.read<PassSelectionViewModel>();
+      passVM.loadActivePass(userId);
+    }
+  }
+
+  void _goToPayment(BuildContext context, PassSelectionViewModel vm) {
+    final authVM = context.read<AuthViewModel>();
+    final userId = authVM.currentUser?.id ?? '';
+
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('User not authenticated')));
+      return;
+    }
+
+    if (vm.selectedPassType == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a pass')));
+      return;
+    }
+
+    // Map PassType to PaymentPurpose
+    final purposeMap = {
+      PassType.day: PaymentPurpose.dayPass,
+      PassType.monthly: PaymentPurpose.monthlyPass,
+      PassType.annual: PaymentPurpose.annualPass,
+    };
+
+    final purpose = purposeMap[vm.selectedPassType]!;
+    final amount = PassSelectionViewModel.prices[vm.selectedPassType] ?? 0;
+
+    // Initialize PaymentViewModel
+    final paymentVM = context.read<PaymentViewModel>();
+    paymentVM.init(
+      purpose: purpose,
+      amount: amount,
+      stationId: null, // null stationId for pass flow
+    );
+
+    // Navigate to Payment Screen
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => PaymentScreen(viewModel: paymentVM)));
   }
 
   @override
@@ -155,7 +220,8 @@ class PassSelectionContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PassPriceTag(
-                          amount: vm.selectedPassType!.price,
+                          amount: PassSelectionViewModel
+                              .prices[vm.selectedPassType]!,
                           label: 'Total',
                         ),
                         SizedBox(height: AppSpacings.m),
@@ -165,7 +231,7 @@ class PassSelectionContent extends StatelessWidget {
                     label: 'Continue to Payment',
                     isLoading: vm.state == ViewState.loading,
                     onPressed: vm.selectedPassType != null
-                        ? () => _navigateToPayment(context, vm)
+                        ? () => _goToPayment(context, vm)
                         : null,
                   ),
                 ],
