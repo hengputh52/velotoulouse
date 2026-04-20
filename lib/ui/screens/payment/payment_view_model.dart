@@ -89,7 +89,9 @@ class PaymentViewModel extends ChangeNotifier {
       }
 
       // Step 3: If slot booking (single ticket), create booking record
-      if (_pendingSlotId != null && _pendingStationId != null) {
+      if (_purpose == PaymentPurpose.singleTicket &&
+          _pendingSlotId != null &&
+          _pendingStationId != null) {
         await _bookingRepository.createBooking(
           userId: userId,
           bikeSlotId: _pendingSlotId!,
