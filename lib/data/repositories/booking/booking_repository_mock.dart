@@ -40,6 +40,33 @@ class MockBookingRepository implements BookingRepository {
   }
 
   @override
+  Future<List<Booking>> getBookingHistory(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    return [
+      Booking(
+        id: 'booking_1',
+        userId: userId,
+        bikeSlotId: 'slot_1',
+        stationId: 'station_1',
+        paymentId: null,
+        passId: 'pass_1',
+        status: BookingStatus.confirmed,
+        bookedAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      Booking(
+        id: 'booking_2',
+        userId: userId,
+        bikeSlotId: 'slot_2',
+        stationId: 'station_2',
+        paymentId: 'payment_1',
+        passId: null,
+        status: BookingStatus.completed,
+        bookedAt: DateTime.now().subtract(const Duration(days: 3)),
+      ),
+    ];
+  }
+
+  @override
   Future<void> cancelBooking(String bookingId) async {
     await Future.delayed(const Duration(milliseconds: 600));
   }

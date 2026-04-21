@@ -33,7 +33,7 @@ class FirebasePassRepository implements PassRepository {
         throw Exception('Failed to load passes');
       }
     } catch (e) {
-      throw Exception('Error to load passed');
+      throw Exception('Error loading active pass: $e');
     }
   }
 
@@ -61,7 +61,7 @@ class FirebasePassRepository implements PassRepository {
         throw Exception('Failed to load pass history');
       }
     } catch (e) {
-      throw Exception('Error to load pass history');
+      throw Exception('Error loading pass history: $e');
     }
   }
 
@@ -101,7 +101,7 @@ class FirebasePassRepository implements PassRepository {
 
       return PassDto.fromJson(passId, passData);
     } catch (e) {
-      throw Exception('Error to load purchase passes');
+      throw Exception('Error purchasing pass: $e');
     }
   }
 }

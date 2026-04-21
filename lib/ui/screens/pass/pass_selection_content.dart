@@ -19,38 +19,6 @@ import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
 class PassSelectionContent extends StatefulWidget {
   const PassSelectionContent({super.key});
 
-  void _navigateToPayment(BuildContext context, PassSelectionViewModel vm) {
-    if (vm.selectedPassType == null) return;
-
-    final selectedPassType = vm.selectedPassType!;
-    final paymentPurpose = vm.mapPassTypeToPurpose(selectedPassType);
-    final amount = selectedPassType.price;
-
-    // Get repositories from provider
-    final paymentRepository = context.read<PaymentRepository>();
-    final passRepository = context.read<PassRepository>();
-
-    // Create PaymentViewModel instance
-    final paymentVM = PaymentViewModel(
-      paymentRepository,
-      passRepository,
-    );
-
-    // Initialize payment with selected pass details
-    paymentVM.init(
-      purpose: paymentPurpose,
-      amount: amount,
-    );
-
-    // Navigate to payment screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PaymentScreen(viewModel: paymentVM),
-      ),
-    );
-  }
-
   @override
   State<PassSelectionContent> createState() => _PassSelectionContentState();
 }
@@ -109,9 +77,11 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     );
 
     // Navigate to Payment Screen
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => PaymentScreen(viewModel: paymentVM)));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PaymentScreen(viewModel: paymentVM),
+      ),
+    );
   }
 
   @override
@@ -164,28 +134,30 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
                   ),
                   SizedBox(height: AppSpacings.m),
                   Column(
-                    children: PassType.values.map((type) {
-                      final isSelected = vm.selectedPassType == type;
-                      final isCurrentPlan =
-                          vm.activePass != null &&
-                          vm.activePass!.isActive &&
-                          vm.activePass!.type == type;
+                    children: [PassType.day, PassType.monthly, PassType.annual]
+                        .map((type) {
+                          final isSelected = vm.selectedPassType == type;
+                          final isCurrentPlan =
+                              vm.activePass != null &&
+                              vm.activePass!.isActive &&
+                              vm.activePass!.type == type;
 
-                      return Column(
-                        children: [
-                          PassTypeCard(
-                            type: type,
-                            price: type.price,
-                            description: type.description,
-                            duration: type.duration,
-                            isSelected: isSelected,
-                            isCurrentPlan: isCurrentPlan,
-                            onTap: () => vm.selectPassType(type),
-                          ),
-                          SizedBox(height: AppSpacings.m),
-                        ],
-                      );
-                    }).toList(),
+                          return Column(
+                            children: [
+                              PassTypeCard(
+                                type: type,
+                                price: type.price,
+                                description: type.description,
+                                duration: type.duration,
+                                isSelected: isSelected,
+                                isCurrentPlan: isCurrentPlan,
+                                onTap: () => vm.selectPassType(type),
+                              ),
+                              SizedBox(height: AppSpacings.m),
+                            ],
+                          );
+                        })
+                        .toList(),
                   ),
 
                   SizedBox(height: 120),
