@@ -67,7 +67,6 @@ List<InheritedProvider> get devProviders {
     ChangeNotifierProvider<StationDetailViewModel>(
       create: (context) => StationDetailViewModel(
         stationRepository: context.read<StationRepository>(),
-
         bookingRepository: context.read<BookingRepository>(),
       ),
     ),
