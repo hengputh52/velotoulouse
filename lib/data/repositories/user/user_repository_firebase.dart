@@ -41,7 +41,7 @@ class FirebaseAuthRepository implements AuthRepository {
             // Get the first (and usually only) nested document
             if (userValue.isNotEmpty) {
               final nestedData = userValue.values.first as Map<String, dynamic>;
-              final userEmail = nestedData['email'];
+              final userEmail = nestedData['email'] as String;
               print('👤 Found user with email: $userEmail');
 
               if (userEmail == email) {
