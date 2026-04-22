@@ -4,23 +4,33 @@ import 'package:velotoulouse/ui/screens/activity/activity_content.dart';
 import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 
-class ActivityScreen extends StatelessWidget {
+class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Selector<AuthViewModel, String?>(
-      selector: (_, vm) => vm.currentUser?.id,
-      builder: (context, userId, _) {
-        // Load activity data when user ID changes
-        if (userId != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.read<ActivityViewModel>().loadActivity(userId);
-          });
-        }
+  State<ActivityScreen> createState() => _ActivityScreenState();
+}
 
-        return const ActivityContent();
-      },
-    );
+class _ActivityScreenState extends State<ActivityScreen> {
+  String? _loadedUserId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final userId = context.watch<AuthViewModel>().currentUser?.id;
+    if (userId != null && userId.isNotEmpty && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<ActivityViewModel>().loadActivity(userId);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const ActivityContent();
   }
 }

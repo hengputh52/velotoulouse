@@ -17,22 +17,20 @@ class BookingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<BookingViewModel>(
-      builder: (context, vm, _) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Confirm Booking'),
-            backgroundColor: Colors.white,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black),
-          ),
-          body: BookingContent(
-            viewModel: vm,
-            stationId: stationId,
-            bikeSlotId: bikeSlotId,
-          ),
-        );
-      },
+    final vm = context.watch<BookingViewModel>();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Confirm Booking'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: BookingContent(
+        viewModel: vm,
+        stationId: stationId,
+        bikeSlotId: bikeSlotId,
+      ),
     );
   }
 }
