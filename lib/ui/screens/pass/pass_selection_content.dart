@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
-import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
-import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -24,21 +21,15 @@ class PassSelectionContent extends StatefulWidget {
     if (vm.selectedPassType == null) return;
 
     final selectedPassType = vm.selectedPassType!;
-    final paymentPurpose =
-        vm.mapPassTypeToPurpose(selectedPassType) as PaymentPurpose;
+    final paymentPurpose = vm.mapPassTypeToPurpose(selectedPassType);
     final amount = selectedPassType.price;
 
     // Get repositories from provider
     final paymentRepository = context.read<PaymentRepository>();
     final passRepository = context.read<PassRepository>();
-    final bookingRepository = context.read<BookingRepository>();
 
     // Create PaymentViewModel instance
-    final paymentVM = PaymentViewModel(
-      paymentRepository,
-      passRepository,
-      bookingRepository,
-    );
+    final paymentVM = PaymentViewModel(paymentRepository, passRepository);
 
     // Initialize payment with selected pass details
     paymentVM.init(purpose: paymentPurpose, amount: amount);
@@ -55,10 +46,25 @@ class PassSelectionContent extends StatefulWidget {
 }
 
 class _PassSelectionContentState extends State<PassSelectionContent> {
+  String? _loadedUserId;
+
   @override
   void initState() {
     super.initState();
     _initializePassSelection();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final authVM = context.watch<AuthViewModel>();
+    final userId = authVM.currentUser?.id;
+
+    if (userId != null && userId.isNotEmpty && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      context.read<PassSelectionViewModel>().loadActivePass(userId);
+    }
   }
 
   void _initializePassSelection() {
@@ -66,6 +72,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     final userId = authVM.currentUser?.id ?? '';
 
     if (userId.isNotEmpty) {
+      _loadedUserId = userId;
       final passVM = context.read<PassSelectionViewModel>();
       passVM.loadActivePass(userId);
     }
@@ -97,7 +104,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     };
 
     final purpose = purposeMap[vm.selectedPassType]!;
-    final amount = PassSelectionViewModel.prices[vm.selectedPassType] ?? 0;
+    final amount = vm.selectedPassType!.price;
 
     // Initialize PaymentViewModel
     final paymentVM = context.read<PaymentViewModel>();
@@ -165,28 +172,30 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
                   ),
                   SizedBox(height: AppSpacings.m),
                   Column(
-                    children: PassType.values.map((type) {
-                      final isSelected = vm.selectedPassType == type;
-                      final isCurrentPlan =
-                          vm.activePass != null &&
-                          vm.activePass!.isActive &&
-                          vm.activePass!.type == type;
+                    children: [PassType.day, PassType.monthly, PassType.annual]
+                        .map((type) {
+                          final isSelected = vm.selectedPassType == type;
+                          final isCurrentPlan =
+                              vm.activePass != null &&
+                              vm.activePass!.isActive &&
+                              vm.activePass!.type == type;
 
-                      return Column(
-                        children: [
-                          PassTypeCard(
-                            type: type,
-                            price: type.price,
-                            description: type.description,
-                            duration: type.duration,
-                            isSelected: isSelected,
-                            isCurrentPlan: isCurrentPlan,
-                            onTap: () => vm.selectPassType(type),
-                          ),
-                          SizedBox(height: AppSpacings.m),
-                        ],
-                      );
-                    }).toList(),
+                          return Column(
+                            children: [
+                              PassTypeCard(
+                                type: type,
+                                price: type.price,
+                                description: type.description,
+                                duration: type.duration,
+                                isSelected: isSelected,
+                                isCurrentPlan: isCurrentPlan,
+                                onTap: () => vm.selectPassType(type),
+                              ),
+                              SizedBox(height: AppSpacings.m),
+                            ],
+                          );
+                        })
+                        .toList(),
                   ),
 
                   SizedBox(height: 120),
@@ -221,8 +230,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PassPriceTag(
-                          amount: PassSelectionViewModel
-                              .prices[vm.selectedPassType]!,
+                          amount: vm.selectedPassType!.price,
                           label: 'Total',
                         ),
                         SizedBox(height: AppSpacings.m),

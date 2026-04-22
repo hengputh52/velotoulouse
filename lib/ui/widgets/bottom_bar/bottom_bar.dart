@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:velotoulouse/ui/screens/activity/activity_screen.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/map_screen.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_screen.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
@@ -18,7 +19,7 @@ class _BottomBarState extends State<BottomBar> {
   final List<Widget> _screens = const [
     MapScreen(), // Tab 0 — Map
     PassSelectionScreen(), // Tab 1 — Passes
-    _ActivityPlaceholder(), // Tab 2 — Activity (Member 3)
+    ActivityScreen(), // Tab 2 — Activity
   ];
 
   @override
@@ -44,22 +45,6 @@ class _BottomBarState extends State<BottomBar> {
             label: 'Activity',
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Placeholder for Member 3's activity screen
-class _ActivityPlaceholder extends StatelessWidget {
-  const _ActivityPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Activity Screen\n(Coming soon)',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 16, color: Colors.grey),
       ),
     );
   }

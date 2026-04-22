@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
+import 'package:velotoulouse/ui/screens/booking/widgets/booking_success_dialog.dart';
+import 'package:velotoulouse/ui/screens/booking/widgets/pass_confirmation_view.dart';
+import 'package:velotoulouse/ui/screens/booking/widgets/pass_selection_view.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_screen.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
 import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
-import 'package:provider/provider.dart';
 
 class BookingContent extends StatefulWidget {
   final BookingViewModel viewModel;
@@ -60,21 +63,25 @@ class _BookingContentState extends State<BookingContent> {
             const SizedBox(height: 20),
             AppPrimaryButton(
               label: 'Retry',
-              onPressed: () {
-                widget.viewModel.loadStation(widget.stationId);
-                widget.viewModel.loadActivePass(
-                  context.read<AuthViewModel>().currentUser?.id ?? '',
-                );
-              },
+              onPressed: () => _retryLoading(context),
             ),
           ],
         ),
       );
     }
 
+    final stationName = widget.viewModel.currentStation?.name ?? 'Station';
+
     // CASE 1: User has active pass
     if (widget.viewModel.hasActivePass) {
-      return _buildWithPassCase(context);
+      return PassConfirmationView(
+        stationName: stationName,
+        slotId: widget.bikeSlotId,
+        activePass: widget.viewModel.activePass!,
+        state: widget.viewModel.state,
+        errorMessage: widget.viewModel.errorMessage,
+        onConfirm: () => _confirmBookingWithPass(context),
+      );
     }
 
     // CASE 2: User has NO active pass
@@ -299,7 +306,6 @@ class _BookingContentState extends State<BookingContent> {
   // ============================================================================
   Widget _buildWithoutPassCase(BuildContext context) {
     final station = widget.viewModel.currentStation;
-    final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
     return Stack(
       children: [
@@ -414,121 +420,34 @@ class _BookingContentState extends State<BookingContent> {
               ),
               SizedBox(height: AppSpacings.m),
 
-              // Single ticket option
-              _buildOptionCard(
-                title: 'Single Ticket',
-                price: currencyFormatter.format(1.50),
-                duration: '1 ride',
-                onTap: () => _goToPayment(context, 'singleTicket', 1.50),
-              ),
-              SizedBox(height: AppSpacings.m),
+              final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
-              // Day pass option
-              _buildOptionCard(
-                title: 'Day Pass',
-                price: currencyFormatter.format(5.00),
-                duration: '24 hours',
-                onTap: () => _goToPayment(context, 'dayPass', 5.00),
-              ),
-              SizedBox(height: AppSpacings.m),
-
-              // Monthly pass option
-              _buildOptionCard(
-                title: 'Monthly Pass',
-                price: currencyFormatter.format(15.00),
-                duration: '30 days',
-                onTap: () => _goToPayment(context, 'monthlyPass', 15.00),
-              ),
-              SizedBox(height: AppSpacings.m),
-
-              // Annual pass option
-              _buildOptionCard(
-                title: 'Annual Pass',
-                price: '€99.00',
-                duration: '365 days',
-                onTap: () => _goToPayment(context, 'annualPass', 99.00),
-              ),
-
-              // Error message if any
-              if (widget.viewModel.errorMessage != null)
-                Column(
-                  children: [
-                    SizedBox(height: AppSpacings.m),
-                    AppErrorBanner(message: widget.viewModel.errorMessage!),
-                  ],
-                ),
-
-              SizedBox(height: 40), // Space for bottom
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Helper widget for option cards
-  Widget _buildOptionCard({
-    required String title,
-    required String price,
-    required String duration,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(AppSpacings.m),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(AppSpacings.radius),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  duration,
-                  style: TextStyle(fontSize: 12, color: AppColors.neutralLight),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  price,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: AppColors.neutralLight.withOpacity(0.5),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return [
+      PassOption(
+        title: 'Single Ticket',
+        price: currencyFormatter.format(1.50),
+        duration: '1 ride',
+        onTap: () => _goToPayment(context, 'singleTicket', 1.50),
       ),
-    );
+      PassOption(
+        title: 'Day Pass',
+        price: currencyFormatter.format(5.00),
+        duration: '24 hours',
+        onTap: () => _goToPayment(context, 'dayPass', 5.00),
+      ),
+      PassOption(
+        title: 'Monthly Pass',
+        price: currencyFormatter.format(15.00),
+        duration: '30 days',
+        onTap: () => _goToPayment(context, 'monthlyPass', 15.00),
+      ),
+      PassOption(
+        title: 'Annual Pass',
+        price: '€99.00',
+        duration: '365 days',
+        onTap: () => _goToPayment(context, 'annualPass', 99.00),
+      ),
+    ];
   }
 
   // Navigate to payment screen
@@ -662,10 +581,10 @@ class _BookingContentState extends State<BookingContent> {
                 child: AppPrimaryButton(
                   label: 'Back to Map',
                   onPressed: () {
-                    final booking = widget.viewModel.currentBooking;
                     Navigator.of(context)
-                      ..pop()
-                      ..pop(booking);
+                      ..pop() // dialog
+                      ..pop() // booking screen
+                      ..pop(); // station detail
                   },
                 ),
               ),

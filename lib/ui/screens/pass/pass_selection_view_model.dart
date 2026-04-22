@@ -15,17 +15,15 @@ class PassSelectionViewModel extends ChangeNotifier {
   String? _errorMessage;
 
   static const Map<PassType, double> prices = {
-    PassType.day: 1.50,
+    PassType.day: 5.00,
     PassType.monthly: 15.00,
     PassType.annual: 99.00,
-    PassType.single: 0.50,
   };
 
   static const Map<PassType, String> descriptions = {
     PassType.day: 'Valid for 24 hours from activation',
     PassType.monthly: 'Valid for 30 days from activation',
     PassType.annual: 'Valid for 365 days from activation',
-    PassType.single: 'Valid for a single use',
   };
 
   static const Map<PassType, String> durations = {
@@ -86,12 +84,12 @@ class PassSelectionViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final amount = prices[_selectedPassType]!;
+      final amount = _selectedPassType!.price;
       final payment = await _paymentRepository.processPayment(
         userId: userId,
         amount: amount,
         method: method,
-        purpose: _mapPassTypeToPurpose(_selectedPassType!),
+        purpose: mapPassTypeToPurpose(_selectedPassType!),
       );
 
       _state = ViewState.success;
@@ -106,7 +104,7 @@ class PassSelectionViewModel extends ChangeNotifier {
   }
 
   // Helper to map PassType to PaymentPurpose
-  PaymentPurpose _mapPassTypeToPurpose(PassType type) {
+  PaymentPurpose mapPassTypeToPurpose(PassType type) {
     return switch (type) {
       PassType.day => PaymentPurpose.dayPass,
       PassType.monthly => PaymentPurpose.monthlyPass,

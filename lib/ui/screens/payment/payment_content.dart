@@ -2,23 +2,50 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
+import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/order_summary_card.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_method_tile.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_processing_overlay.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
+import 'package:velotoulouse/ui/widgets/bottom_bar/bottom_bar.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
 import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
 
 class PaymentContent extends StatelessWidget {
   const PaymentContent({super.key});
 
-  void _processPaymentWithAuth(BuildContext context, PaymentViewModel vm) {
+  Future<void> _processPaymentWithAuth(
+    BuildContext context,
+    PaymentViewModel vm,
+  ) async {
     final authVM = context.read<AuthViewModel>();
     final userId = authVM.currentUser?.id ?? '';
-    if (userId.isNotEmpty) {
-      vm.processPayment(userId);
+    if (userId.isEmpty) {
+      return;
+    }
+
+    await vm.processPayment(userId);
+    if (!context.mounted) {
+      return;
+    }
+
+    if (vm.state == ViewState.success && vm.completedPayment != null) {
+      final isPassPurchase =
+          vm.purpose == PaymentPurpose.dayPass ||
+          vm.purpose == PaymentPurpose.monthlyPass ||
+          vm.purpose == PaymentPurpose.annualPass;
+
+      if (isPassPurchase) {
+        await context.read<PassSelectionViewModel>().loadActivePass(userId);
+      }
+
+      if (!context.mounted) {
+        return;
+      }
+
+      _showPaymentSuccessDialog(context, vm);
     }
   }
 
@@ -61,10 +88,7 @@ class PaymentContent extends StatelessWidget {
               SizedBox(height: AppSpacings.l),
               AppPrimaryButton(
                 label: 'Continue',
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop(vm.createdBooking);
-                },
+                onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
@@ -87,15 +111,6 @@ class PaymentContent extends StatelessWidget {
       ),
       body: Consumer<PaymentViewModel>(
         builder: (context, vm, _) {
-          // Handle success state - show dialog
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (vm.state == ViewState.success &&
-                vm.completedPayment != null &&
-                context.mounted) {
-              _showPaymentSuccessDialog(context, vm);
-            }
-          });
-
           return Stack(
             children: [
               SingleChildScrollView(
@@ -208,7 +223,7 @@ class PaymentContent extends StatelessWidget {
                         label: 'Pay \$${vm.amount.toStringAsFixed(2)}',
                         isLoading: vm.state == ViewState.loading,
                         onPressed: vm.state != ViewState.loading
-                            ? () => _processPaymentWithAuth(context, vm)
+                            ? () async => _processPaymentWithAuth(context, vm)
                             : null,
                       ),
                     ],

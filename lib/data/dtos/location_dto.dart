@@ -16,8 +16,8 @@ class LocationDto {
       id: json[idKey],
       latitude: (json[latitudeKey] as num).toDouble(),
       longitude: (json[longitudeKey] as num).toDouble(),
-      address: json[addressKey] as String?,
-      city: json[cityKey] as String?,
+      address: json[addressKey],
+      city: json[cityKey],
     );
   }
 

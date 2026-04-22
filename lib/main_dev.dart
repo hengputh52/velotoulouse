@@ -10,11 +10,13 @@ import 'package:velotoulouse/data/repositories/station/station_repository_fireba
 import 'package:velotoulouse/data/repositories/user/user_repository.dart';
 import 'package:velotoulouse/data/repositories/user/user_repository_firebase.dart';
 import 'package:velotoulouse/main_common.dart';
+import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
-import 'package:velotoulouse/ui/screens/map/view_model/active_booking_view_model.dart';
+import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/states/auth_state.dart';
 
 List<InheritedProvider> get devProviders {
@@ -30,8 +32,9 @@ List<InheritedProvider> get devProviders {
     ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
 
     // ============================================
-    // 2 - INJECT VIEWMODELS
+    // 2 - INJECT GLOBAL STATE & VIEWMODELS
     // ============================================
+    ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
     ChangeNotifierProvider<AuthViewModel>(
       create: (context) => AuthViewModel(
         context.read<AuthRepository>(),
@@ -44,6 +47,7 @@ List<InheritedProvider> get devProviders {
         context.read<PaymentRepository>(),
       ),
     ),
+
     ChangeNotifierProvider<PaymentViewModel>(
       create: (context) => PaymentViewModel(
         context.read<PaymentRepository>(),
@@ -51,6 +55,7 @@ List<InheritedProvider> get devProviders {
         context.read<BookingRepository>(),
       ),
     ),
+
     ChangeNotifierProvider<BookingViewModel>(
       create: (context) => BookingViewModel(
         context.read<BookingRepository>(),
@@ -58,8 +63,17 @@ List<InheritedProvider> get devProviders {
         context.read<StationRepository>(),
       ),
     ),
-    ChangeNotifierProvider<ActiveBookingViewModel>(
-      create: (_) => ActiveBookingViewModel(),
+    ChangeNotifierProvider<StationViewModel>(
+      create: (context) => StationViewModel(
+        stationRepository: context.read<StationRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider<ActivityViewModel>(
+      create: (context) => ActivityViewModel(
+        context.read<BookingRepository>(),
+        context.read<PassRepository>(),
+        context.read<PaymentRepository>(),
+      ),
     ),
   ];
 }
