@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/data/repositories/station/station_repository.dart';
-import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
+import 'package:velotoulouse/ui/screens/station/view_model/station_detail_view_model.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/map_content.dart';
 
 /// MapScreen — StatefulWidget

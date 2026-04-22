@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
@@ -298,6 +299,7 @@ class _BookingContentState extends State<BookingContent> {
   // ============================================================================
   Widget _buildWithoutPassCase(BuildContext context) {
     final station = widget.viewModel.currentStation;
+    final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
     return Stack(
       children: [
@@ -411,8 +413,6 @@ class _BookingContentState extends State<BookingContent> {
                 ),
               ),
               SizedBox(height: AppSpacings.m),
-
-              final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
               // Single ticket option
               _buildOptionCard(
@@ -532,7 +532,11 @@ class _BookingContentState extends State<BookingContent> {
   }
 
   // Navigate to payment screen
-  void _goToPayment(BuildContext context, String passType, double amount) {
+  Future<void> _goToPayment(
+    BuildContext context,
+    String passType,
+    double amount,
+  ) async {
     try {
       // Map passType string to PaymentPurpose enum
       final purposeMap = {
@@ -554,12 +558,21 @@ class _BookingContentState extends State<BookingContent> {
       );
 
       // Navigate to PaymentScreen
-      Navigator.push(
+      final Booking? createdBooking = await Navigator.push<Booking>(
         context,
         MaterialPageRoute(
           builder: (context) => PaymentScreen(viewModel: paymentViewModel),
         ),
       );
+
+      if (createdBooking != null && context.mounted) {
+        Navigator.of(context).pop(createdBooking);
+      } else {
+        final userId = context.read<AuthViewModel>().currentUser?.id ?? '';
+        if (userId.isNotEmpty) {
+          await widget.viewModel.loadActivePass(userId);
+        }
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error navigating to payment: $e')),
@@ -649,10 +662,10 @@ class _BookingContentState extends State<BookingContent> {
                 child: AppPrimaryButton(
                   label: 'Back to Map',
                   onPressed: () {
+                    final booking = widget.viewModel.currentBooking;
                     Navigator.of(context)
-                      ..pop() // dialog
-                      ..pop() // booking screen
-                      ..pop(); // station detail
+                      ..pop()
+                      ..pop(booking);
                   },
                 ),
               ),

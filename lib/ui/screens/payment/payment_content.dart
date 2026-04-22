@@ -6,7 +6,6 @@ import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/order_summary_card.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_method_tile.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_processing_overlay.dart';
-import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
@@ -62,7 +61,10 @@ class PaymentContent extends StatelessWidget {
               SizedBox(height: AppSpacings.l),
               AppPrimaryButton(
                 label: 'Continue',
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(vm.createdBooking);
+                },
               ),
             ],
           ),
@@ -170,7 +172,7 @@ class PaymentContent extends StatelessWidget {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, -2),
                       ),

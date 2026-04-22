@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
 import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
@@ -23,31 +24,29 @@ class PassSelectionContent extends StatefulWidget {
     if (vm.selectedPassType == null) return;
 
     final selectedPassType = vm.selectedPassType!;
-    final paymentPurpose = vm.mapPassTypeToPurpose(selectedPassType);
+    final paymentPurpose =
+        vm.mapPassTypeToPurpose(selectedPassType) as PaymentPurpose;
     final amount = selectedPassType.price;
 
     // Get repositories from provider
     final paymentRepository = context.read<PaymentRepository>();
     final passRepository = context.read<PassRepository>();
+    final bookingRepository = context.read<BookingRepository>();
 
     // Create PaymentViewModel instance
     final paymentVM = PaymentViewModel(
       paymentRepository,
       passRepository,
+      bookingRepository,
     );
 
     // Initialize payment with selected pass details
-    paymentVM.init(
-      purpose: paymentPurpose,
-      amount: amount,
-    );
+    paymentVM.init(purpose: paymentPurpose, amount: amount);
 
     // Navigate to payment screen
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => PaymentScreen(viewModel: paymentVM),
-      ),
+      MaterialPageRoute(builder: (_) => PaymentScreen(viewModel: paymentVM)),
     );
   }
 
@@ -109,9 +108,11 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     );
 
     // Navigate to Payment Screen
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => PaymentScreen(viewModel: paymentVM)));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PaymentScreen(viewModel: paymentVM),
+      ),
+    );
   }
 
   @override

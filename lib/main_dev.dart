@@ -12,8 +12,10 @@ import 'package:velotoulouse/data/repositories/user/user_repository_firebase.dar
 import 'package:velotoulouse/main_common.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
+import 'package:velotoulouse/ui/screens/map/view_model/active_booking_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/states/auth_state.dart';
 
 List<InheritedProvider> get devProviders {
   return [
@@ -25,12 +27,16 @@ List<InheritedProvider> get devProviders {
     Provider<PassRepository>(create: (_) => FirebasePassRepository()),
     Provider<PaymentRepository>(create: (_) => FirebasePaymentRepository()),
     Provider<BookingRepository>(create: (_) => FirebaseBookingRepository()),
+    ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
 
     // ============================================
     // 2 - INJECT VIEWMODELS
     // ============================================
     ChangeNotifierProvider<AuthViewModel>(
-      create: (context) => AuthViewModel(context.read<AuthRepository>()),
+      create: (context) => AuthViewModel(
+        context.read<AuthRepository>(),
+        context.read<AuthState>(),
+      ),
     ),
     ChangeNotifierProvider<PassSelectionViewModel>(
       create: (context) => PassSelectionViewModel(
@@ -51,6 +57,9 @@ List<InheritedProvider> get devProviders {
         context.read<PassRepository>(),
         context.read<StationRepository>(),
       ),
+    ),
+    ChangeNotifierProvider<ActiveBookingViewModel>(
+      create: (_) => ActiveBookingViewModel(),
     ),
   ];
 }

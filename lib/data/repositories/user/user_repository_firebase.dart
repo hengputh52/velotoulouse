@@ -18,7 +18,7 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser?> signInWithEmail(String email, String password) async {
     try {
-      print('🔐 Attempting login with email: $email');
+      print(' Attempting login with email: $email');
       // Fetch all users from Firebase
       final http.Response response = await http.get(usersUri);
 
@@ -43,24 +43,24 @@ class FirebaseAuthRepository implements AuthRepository {
               final nestedData = userValue.values.first as Map<String, dynamic>;
               final userEmail = nestedData['email'];
               print('👤 Found user with email: $userEmail');
-              
+
               if (userEmail == email) {
                 print('✅ Email matched!');
-                
+
                 // Verify password
                 final storedPassword = nestedData['password'] as String?;
-                
+
                 if (storedPassword == null || storedPassword.isEmpty) {
                   print('⚠️ No password set - allowing login (legacy account)');
                   _currentUser = AppUserDto.fromJson(userEntry.key, nestedData);
                   return _currentUser;
                 }
-                
+
                 if (storedPassword != password) {
                   print('❌ Password mismatch!');
                   return null;
                 }
-                
+
                 print('✅ Login successful!');
                 _currentUser = AppUserDto.fromJson(userEntry.key, nestedData);
                 return _currentUser;
@@ -94,7 +94,7 @@ class FirebaseAuthRepository implements AuthRepository {
         'id': userId,
         'email': email,
         'displayName': displayName,
-        'password': password,  // ← Store password for later verification
+        'password': password, // ← Store password for later verification
         'createdAt': now.toIso8601String(),
       };
 
