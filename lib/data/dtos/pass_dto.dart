@@ -9,19 +9,25 @@ class PassDto {
   static const String expiresAtKey = 'expiresAt';
 
   static Pass fromJson(String id, Map<String, dynamic> json) {
-    assert(json[userIdKey] is String);
-    assert(json[paymentIdKey] is String);
-    assert(json[typeKey] is String);
-    assert(json[purchasedAtKey] is String);
-    assert(json[expiresAtKey] is String);
+    final userId = json[userIdKey] as String?;
+    final paymentId = json[paymentIdKey] as String?;
+    final typeStr = json[typeKey] as String?;
+    final purchasedAtStr = json[purchasedAtKey] as String?;
+    final expiresAtStr = json[expiresAtKey] as String?;
+
+    assert(userId != null && userId.isNotEmpty, 'Pass $id: missing userId');
+    assert(paymentId != null && paymentId.isNotEmpty, 'Pass $id: missing paymentId');
+    assert(typeStr != null && typeStr.isNotEmpty, 'Pass $id: missing type');
+    assert(purchasedAtStr != null && purchasedAtStr.isNotEmpty, 'Pass $id: missing purchasedAt');
+    assert(expiresAtStr != null && expiresAtStr.isNotEmpty, 'Pass $id: missing expiresAt');
 
     return Pass(
       id: id,
-      userId: json[userIdKey],
-      paymentId: json[paymentIdKey],
-      type: PassType.values.byName(json[typeKey]),
-      purchasedAt: DateTime.parse(json[purchasedAtKey]),
-      expiresAt: DateTime.parse(json[expiresAtKey]),
+      userId: userId!,
+      paymentId: paymentId!,
+      type: PassType.values.byName(typeStr!),
+      purchasedAt: DateTime.parse(purchasedAtStr!),
+      expiresAt: DateTime.parse(expiresAtStr!),
     );
   }
 
