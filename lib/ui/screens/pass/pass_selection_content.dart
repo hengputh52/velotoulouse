@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
-import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -19,80 +17,21 @@ import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
 class PassSelectionContent extends StatefulWidget {
   const PassSelectionContent({super.key});
 
-  void _navigateToPayment(BuildContext context, PassSelectionViewModel vm) {
-    if (vm.selectedPassType == null) return;
-
-    final selectedPassType = vm.selectedPassType!;
-    final paymentPurpose = vm.mapPassTypeToPurpose(selectedPassType);
-    final amount = selectedPassType.price;
-
-    // Get repositories from provider
-    final paymentRepository = context.read<PaymentRepository>();
-    final passRepository = context.read<PassRepository>();
-
-    // Create PaymentViewModel instance
-    final paymentVM = PaymentViewModel(
-      paymentRepository,
-      passRepository,
-      context.read(),
-    );
-
-    // Initialize payment with selected pass details
-    paymentVM.init(purpose: paymentPurpose, amount: amount);
-
-    // Navigate to payment screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => PaymentScreen(viewModel: paymentVM)),
-    );
-  }
-
   @override
   State<PassSelectionContent> createState() => _PassSelectionContentState();
 }
 
 class _PassSelectionContentState extends State<PassSelectionContent> {
-  String? _loadedUserId;
-  bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializePassSelection();
-    });
+    _loadActivePass();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final authVM = context.watch<AuthViewModel>();
-    final userId = authVM.currentUser?.id;
-
-    if (userId != null && userId.isNotEmpty && userId != _loadedUserId) {
-      _loadedUserId = userId;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<PassSelectionViewModel>().loadActivePass(userId);
-        }
-      });
-    }
-  }
-
-  void _initializePassSelection() {
-    if (_isLoading) return;
-    _isLoading = true;
-
-    final authVM = context.read<AuthViewModel>();
-    final userId = authVM.currentUser?.id ?? '';
-
-    if (userId.isNotEmpty && userId != _loadedUserId) {
-      _loadedUserId = userId;
-      final passVM = context.read<PassSelectionViewModel>();
-      passVM.loadActivePass(userId);
-    }
-    _isLoading = false;
+  void _loadActivePass() {
+    final userId = context.read<AuthViewModel>().currentUser?.id;
+    if (userId == null || userId.isEmpty) return;
+    context.read<PassSelectionViewModel>().loadActivePass(userId);
   }
 
   void _goToPayment(BuildContext context, PassSelectionViewModel vm) {

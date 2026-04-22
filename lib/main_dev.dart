@@ -20,9 +20,7 @@ import 'package:velotoulouse/ui/states/auth_state.dart';
 
 List<InheritedProvider> get devProviders {
   return [
-    // ============================================
-    // 1 - INJECT REPOSITORIES (Firebase)
-    // ============================================
+
     Provider<AuthRepository>(create: (_) => FirebaseAuthRepository()),
     Provider<StationRepository>(create: (_) => FirebaseStationRepository()),
     Provider<PassRepository>(create: (_) => FirebasePassRepository()),
@@ -30,9 +28,7 @@ List<InheritedProvider> get devProviders {
     Provider<BookingRepository>(create: (_) => FirebaseBookingRepository()),
     ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
 
-    // ============================================
-    // 2 - INJECT GLOBAL STATE & VIEWMODELS
-    // ============================================
+
     ChangeNotifierProvider<AuthViewModel>(
       create: (context) => AuthViewModel(
         context.read<AuthRepository>(),

@@ -19,7 +19,7 @@ class StationDto {
     final locationId = json[locationIdKey] as String;
     final location = LocationDto.fromJson(locationId, locationData);
 
-    // Handle slots - could be List or Map
+
     List<BikeSlot> slotsList = [];
     
     if (json[slotsKey] != null) {
@@ -35,7 +35,7 @@ class StationDto {
             })
             .toList();
       } else if (slotsData is Map) {
-        // Handle as Map (Firebase object)
+
         slotsList = slotsData.entries
             .map((entry) {
               final slotData = entry.value as Map<String, dynamic>;
