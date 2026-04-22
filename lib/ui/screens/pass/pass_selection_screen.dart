@@ -11,10 +11,16 @@ class PassSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => PassSelectionViewModel(
-        context.read<PassRepository>(),
-        context.read<PaymentRepository>(),
-      ),
+      create: (context) {
+        try {
+          PassSelectionViewModel(
+            context.read<PassRepository>(),
+            context.read<PaymentRepository>(),
+          );
+        } catch (e) {
+          throw Exception('Pass Selection View model creation error: $e');
+        }
+      },
       child: const PassSelectionContent(),
     );
   }

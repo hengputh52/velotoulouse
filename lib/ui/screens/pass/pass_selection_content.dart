@@ -53,11 +53,14 @@ class PassSelectionContent extends StatefulWidget {
 
 class _PassSelectionContentState extends State<PassSelectionContent> {
   String? _loadedUserId;
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _initializePassSelection();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializePassSelection();
+    });
   }
 
   @override
@@ -69,19 +72,27 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
 
     if (userId != null && userId.isNotEmpty && userId != _loadedUserId) {
       _loadedUserId = userId;
-      context.read<PassSelectionViewModel>().loadActivePass(userId);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<PassSelectionViewModel>().loadActivePass(userId);
+        }
+      });
     }
   }
 
   void _initializePassSelection() {
+    if (_isLoading) return;
+    _isLoading = true;
+
     final authVM = context.read<AuthViewModel>();
     final userId = authVM.currentUser?.id ?? '';
 
-    if (userId.isNotEmpty) {
+    if (userId.isNotEmpty && userId != _loadedUserId) {
       _loadedUserId = userId;
       final passVM = context.read<PassSelectionViewModel>();
       passVM.loadActivePass(userId);
     }
+    _isLoading = false;
   }
 
   void _goToPayment(BuildContext context, PassSelectionViewModel vm) {

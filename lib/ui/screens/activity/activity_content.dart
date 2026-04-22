@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
-import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -15,36 +14,34 @@ class ActivityContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ActivityViewModel>(
-      builder: (context, vm, _) {
-        return DefaultTabController(
-          length: 3,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text(
-                'Activity',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              backgroundColor: Colors.white,
-              elevation: 0,
-              bottom: TabBar(
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.neutralLight,
-                indicatorColor: AppColors.primary,
-                tabs: const [
-                  Tab(text: 'Bookings'),
-                  Tab(text: 'Passes'),
-                  Tab(text: 'Payments'),
-                ],
-              ),
+    final vm = context.watch<ActivityViewModel>();
+
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Activity',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w700,
             ),
-            body: _buildBody(context, vm),
           ),
-        );
-      },
+          backgroundColor: Colors.white,
+          elevation: 0,
+          bottom: TabBar(
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.neutralLight,
+            indicatorColor: AppColors.primary,
+            tabs: const [
+              Tab(text: 'Bookings'),
+              Tab(text: 'Passes'),
+              Tab(text: 'Payments'),
+            ],
+          ),
+        ),
+        body: _buildBody(context, vm),
+      ),
     );
   }
 
