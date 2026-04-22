@@ -4,17 +4,14 @@ import 'package:velotoulouse/ui/theme/theme.dart';
 class SlotStatusBadge extends StatelessWidget {
   final bool isAvailable;
 
-  const SlotStatusBadge({
-    super.key,
-    required this.isAvailable,
-  });
+  const SlotStatusBadge({super.key, required this.isAvailable});
 
   @override
   Widget build(BuildContext context) {
     return Chip(
       label: Text(
         isAvailable ? 'Available' : 'Occupied',
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w600,
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/data/repositories/station/station_repository.dart';
 import 'package:velotoulouse/ui/screens/station/station_detail_content.dart';
 import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
@@ -7,10 +8,7 @@ import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
 class StationDetailScreen extends StatefulWidget {
   final String stationId;
 
-  const StationDetailScreen({
-    super.key,
-    required this.stationId,
-  });
+  const StationDetailScreen({super.key, required this.stationId});
 
   @override
   State<StationDetailScreen> createState() => _StationDetailScreenState();
@@ -29,8 +27,13 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ProxyProvider<StationRepository, StationDetailViewModel>(
-          update: (_, stationRepo, __) => StationDetailViewModel(stationRepo),
+        ProxyProvider2<
+          StationRepository,
+          BookingRepository,
+          StationDetailViewModel
+        >(
+          update: (_, stationRepo, bookingRepo, __) =>
+              StationDetailViewModel(stationRepo, bookingRepo),
         ),
       ],
       child: const StationDetailContent(),

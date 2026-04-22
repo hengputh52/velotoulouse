@@ -25,7 +25,9 @@ class BikeSlotCard extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
-                : (slot.isAvailable ? Colors.grey.shade300 : Colors.grey.shade200),
+                : (slot.isAvailable
+                      ? Colors.grey.shade300
+                      : Colors.grey.shade200),
             width: isSelected ? 3 : 1,
           ),
           borderRadius: BorderRadius.circular(AppSpacings.radius),
@@ -59,8 +61,30 @@ class BikeSlotCard extends StatelessWidget {
                             ),
                             SizedBox(height: AppSpacings.s),
                             SlotStatusBadge(isAvailable: slot.isAvailable),
+                            SizedBox(height: AppSpacings.m),
+                            Text(
+                              slot.isAvailable
+                                  ? '📍 Ready to book'
+                                  : '🚲 Bike in use',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.secondary,
+                              ),
+                            ),
                           ],
                         ),
+                        if (slot.isAvailable)
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green.shade600,
+                            size: 28,
+                          )
+                        else
+                          Icon(
+                            Icons.cancel,
+                            color: Colors.red.shade400,
+                            size: 28,
+                          ),
                       ],
                     ),
                   ],
