@@ -10,10 +10,13 @@ import 'package:velotoulouse/data/repositories/station/station_repository_fireba
 import 'package:velotoulouse/data/repositories/user/user_repository.dart';
 import 'package:velotoulouse/data/repositories/user/user_repository_firebase.dart';
 import 'package:velotoulouse/main_common.dart';
+import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
+import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/states/auth_state.dart';
 
 List<InheritedProvider> get devProviders {
   return [
@@ -27,10 +30,14 @@ List<InheritedProvider> get devProviders {
     Provider<BookingRepository>(create: (_) => FirebaseBookingRepository()),
 
     // ============================================
-    // 2 - INJECT VIEWMODELS
+    // 2 - INJECT GLOBAL STATE & VIEWMODELS
     // ============================================
+    ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
     ChangeNotifierProvider<AuthViewModel>(
-      create: (context) => AuthViewModel(context.read<AuthRepository>()),
+      create: (context) => AuthViewModel(
+        context.read<AuthRepository>(),
+        context.read<AuthState>(),
+      ),
     ),
     ChangeNotifierProvider<PassSelectionViewModel>(
       create: (context) => PassSelectionViewModel(
@@ -50,6 +57,18 @@ List<InheritedProvider> get devProviders {
         context.read<BookingRepository>(),
         context.read<PassRepository>(),
         context.read<StationRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider<StationViewModel>(
+      create: (context) => StationViewModel(
+        stationRepository: context.read<StationRepository>(),
+      ),
+    ),
+    ChangeNotifierProvider<ActivityViewModel>(
+      create: (context) => ActivityViewModel(
+        context.read<BookingRepository>(),
+        context.read<PassRepository>(),
+        context.read<PaymentRepository>(),
       ),
     ),
   ];

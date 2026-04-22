@@ -105,6 +105,31 @@ class FirebaseBookingRepository implements BookingRepository {
   }
 
   @override
+  Future<List<Booking>> getBookingHistory(String userId) async {
+    try {
+      final http.Response response = await http.get(bookingsUri);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> bookingsJson = json.decode(response.body);
+        List<Booking> result = [];
+
+        for (final entry in bookingsJson.entries) {
+          final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
+
+          if (booking.userId == userId) {
+            result.add(booking);
+          }
+        }
+        return result;
+      } else {
+        throw Exception('Failed to load booking history');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> cancelBooking(String bookingId) async {
     try {
       final Uri cancelUri = Uri.https(
