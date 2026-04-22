@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
@@ -306,139 +305,33 @@ class _BookingContentState extends State<BookingContent> {
   // ============================================================================
   Widget _buildWithoutPassCase(BuildContext context) {
     final station = widget.viewModel.currentStation;
+    final stationName = station?.name ?? 'Station';
 
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: EdgeInsets.all(AppSpacings.l),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bike image placeholder
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppSpacings.radius),
-                child: Container(
-                  width: double.infinity,
-                  height: 200,
-                  color: const Color(0xFFD6F0EF),
-                  child: const Icon(
-                    Icons.pedal_bike,
-                    size: 120,
-                    color: Color(0xFF3CBAB3),
-                  ),
-                ),
-              ),
-              SizedBox(height: AppSpacings.l),
+    return PassSelectionView(
+      stationName: stationName,
+      slotId: widget.bikeSlotId,
+      errorMessage: widget.viewModel.errorMessage,
+      passOptions: _buildPassOptions(context),
+    );
+  }
 
-              // Station name
-              Text(
-                station?.name.toUpperCase() ?? 'Loading...',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: AppSpacings.s),
-
-              // Slot info
-              Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 14,
-                    color: AppColors.neutralLight,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Slot ${widget.bikeSlotId}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.neutralLight,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: AppSpacings.l),
-              const Divider(),
-              SizedBox(height: AppSpacings.l),
-
-              // Message banner
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(AppSpacings.m),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                  borderRadius: BorderRadius.circular(AppSpacings.radius),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        SizedBox(width: AppSpacings.m),
-                        Expanded(
-                          child: Text(
-                            'You need a pass or ticket to book a bike.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: AppSpacings.m),
-                    Text(
-                      'Choose a pass type or buy a single ticket to proceed.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: AppSpacings.xl),
-
-              // Pass options grid
-              Text(
-                'Available Options',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: AppSpacings.m),
-          
-
-              final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
-
+  List<PassOption> _buildPassOptions(BuildContext context) {
     return [
       PassOption(
         title: 'Single Ticket',
-        price: currencyFormatter.format(1.50),
+        price: '€1.50',
         duration: '1 ride',
         onTap: () => _goToPayment(context, 'singleTicket', 1.50),
       ),
       PassOption(
         title: 'Day Pass',
-        price: currencyFormatter.format(5.00),
+        price: '€5.00',
         duration: '24 hours',
         onTap: () => _goToPayment(context, 'dayPass', 5.00),
       ),
       PassOption(
         title: 'Monthly Pass',
-        price: currencyFormatter.format(15.00),
+        price: '€15.00',
         duration: '30 days',
         onTap: () => _goToPayment(context, 'monthlyPass', 15.00),
       ),
