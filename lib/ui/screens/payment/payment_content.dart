@@ -6,6 +6,7 @@ import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/order_summary_card.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_method_tile.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_processing_overlay.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
 import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
@@ -56,13 +57,25 @@ class PaymentContent extends StatelessWidget {
               ),
               SizedBox(height: AppSpacings.s),
               Text(
-                'Amount: \$${vm.amount.toStringAsFixed(2)}',
+                'Amount: €${vm.amount.toStringAsFixed(2)}',
                 style: const TextStyle(fontSize: 14),
               ),
               SizedBox(height: AppSpacings.l),
               AppPrimaryButton(
                 label: 'Continue',
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  // Clear station cache after successful payment and booking
+                  try {
+                    final stationVM = context.read<StationDetailViewModel>();
+                    stationVM.clearAllStatusCache();
+                  } catch (e) {
+                    print('Could not clear station cache: $e');
+                  }
+                  // Reset payment view model
+                  vm.reset();
+                  // Navigate back
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
@@ -192,7 +205,7 @@ class PaymentContent extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '\$${vm.amount.toStringAsFixed(2)}',
+                            '€${vm.amount.toStringAsFixed(2)}',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -203,7 +216,7 @@ class PaymentContent extends StatelessWidget {
                       ),
                       SizedBox(height: AppSpacings.m),
                       AppPrimaryButton(
-                        label: 'Pay \$${vm.amount.toStringAsFixed(2)}',
+                        label: 'Pay €${vm.amount.toStringAsFixed(2)}',
                         isLoading: vm.state == ViewState.loading,
                         onPressed: vm.state != ViewState.loading
                             ? () => _processPaymentWithAuth(context, vm)

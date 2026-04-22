@@ -4,8 +4,37 @@ import 'package:velotoulouse/ui/screens/activity/activity_content.dart';
 import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 
-class ActivityScreen extends StatelessWidget {
+class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
+
+  @override
+  State<ActivityScreen> createState() => _ActivityScreenState();
+}
+
+class _ActivityScreenState extends State<ActivityScreen>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Reload activity when screen comes to foreground
+    if (state == AppLifecycleState.resumed) {
+      final userId = context.read<AuthViewModel>().currentUser?.id;
+      if (userId != null && userId.isNotEmpty) {
+        context.read<ActivityViewModel>().loadActivity(userId);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

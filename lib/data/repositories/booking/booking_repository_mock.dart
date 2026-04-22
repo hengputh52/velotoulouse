@@ -1,8 +1,11 @@
 import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
 
-
 class MockBookingRepository implements BookingRepository {
+  // In-memory storage for bookings
+  final Map<String, Booking> _bookings = {};
+  final Map<String, List<Booking>> _userBookings = {};
+
   @override
   Future<Booking> createBooking({
     required String userId,
@@ -12,7 +15,8 @@ class MockBookingRepository implements BookingRepository {
     String? passId,
   }) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return Booking(
+
+    final booking = Booking(
       id: 'booking_${DateTime.now().millisecondsSinceEpoch}',
       userId: userId,
       bikeSlotId: bikeSlotId,
@@ -22,52 +26,69 @@ class MockBookingRepository implements BookingRepository {
       status: BookingStatus.confirmed,
       bookedAt: DateTime.now(),
     );
+
+    // Store booking in memory
+    _bookings[booking.id] = booking;
+    _userBookings.putIfAbsent(userId, () => []).add(booking);
+
+    return booking;
   }
 
   @override
   Future<Booking?> getActiveBooking(String userId) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return Booking(
-      id: 'booking_1',
-      userId: userId,
-      bikeSlotId: 'slot_1',
-      stationId: 'station_1',
-      paymentId: null,
-      passId: 'pass_1',
-      status: BookingStatus.confirmed,
-      bookedAt: DateTime.now(),
-    );
+
+    // Return the first confirmed booking for this user
+    try {
+      return (_userBookings[userId] ?? []).firstWhere(
+        (b) => b.status == BookingStatus.confirmed,
+      );
+    } catch (e) {
+      return null; // No active booking
+    }
   }
 
   @override
   Future<List<Booking>> getBookingHistory(String userId) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return [
-      Booking(
-        id: 'booking_1',
-        userId: userId,
-        bikeSlotId: 'slot_1',
-        stationId: 'station_1',
-        paymentId: null,
-        passId: 'pass_1',
-        status: BookingStatus.confirmed,
-        bookedAt: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-      Booking(
-        id: 'booking_2',
-        userId: userId,
-        bikeSlotId: 'slot_2',
-        stationId: 'station_2',
-        paymentId: 'payment_1',
-        passId: null,
-        status: BookingStatus.completed,
-        bookedAt: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-    ];
+    return _userBookings[userId] ?? [];
   }
 
   @override
   Future<void> cancelBooking(String bookingId) async {
     await Future.delayed(const Duration(milliseconds: 600));
+
+    final booking = _bookings[bookingId];
+    if (booking != null) {
+      _bookings[bookingId] = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        bikeSlotId: booking.bikeSlotId,
+        stationId: booking.stationId,
+        paymentId: booking.paymentId,
+        passId: booking.passId,
+        status: BookingStatus.cancelled,
+        bookedAt: booking.bookedAt,
+      );
+    }
+  }
+
+  @override
+  Future<void> completeBooking(String bookingId) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    final booking = _bookings[bookingId];
+    if (booking != null) {
+      _bookings[bookingId] = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        bikeSlotId: booking.bikeSlotId,
+        stationId: booking.stationId,
+        paymentId: booking.paymentId,
+        passId: booking.passId,
+        status: BookingStatus.completed,
+        bookedAt: booking.bookedAt,
+      );
+    }
   }
 }

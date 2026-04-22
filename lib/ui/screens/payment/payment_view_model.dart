@@ -129,4 +129,13 @@ class PaymentViewModel extends ChangeNotifier {
     }
     return 'Payment failed. Please try again';
   }
+
+  // Reset view model state
+  void reset() {
+    _state = ViewState.loading;
+    _selectedMethod = PaymentMethod.card;
+    _completedPayment = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

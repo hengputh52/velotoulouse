@@ -9,6 +9,7 @@ import 'package:velotoulouse/ui/screens/booking/widgets/pass_confirmation_view.d
 import 'package:velotoulouse/ui/screens/booking/widgets/pass_selection_view.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_screen.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
@@ -197,6 +198,14 @@ class _BookingContentState extends State<BookingContent> {
         )
         .then((_) {
           if (widget.viewModel.state == ViewState.success) {
+            // Clear slot status cache after successful booking
+            try {
+              final stationVM = context.read<StationDetailViewModel>();
+              stationVM.clearAllStatusCache();
+            } catch (e) {
+              // StationDetailViewModel might not be in context
+              print('Could not clear station cache: $e');
+            }
             _showSuccessDialog(context);
           }
         });
@@ -210,10 +219,10 @@ class _BookingContentState extends State<BookingContent> {
       builder: (_) => BookingSuccessDialog(
         stationName: widget.viewModel.currentStation?.name ?? 'Station',
         onBackToMap: () {
-          Navigator.of(context)
-            ..pop() // dialog
-            ..pop() // booking screen
-            ..pop(); // station detail
+          // Close dialog first
+          Navigator.of(context).pop();
+          // Then pop booking and station detail screens to return to map
+          Navigator.of(context).popUntil((route) => route.isFirst);
         },
       ),
     );
