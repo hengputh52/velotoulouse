@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velotoulouse/data/repositories/user/user_repository.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_screen.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
-import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/bottom_bar/bottom_bar.dart';
 
@@ -35,13 +33,5 @@ class MyHomePage extends StatelessWidget {
         ? const AuthScreen()
         : const BottomBar();
     return screen;
-    //     // Show auth screen if not authenticated
-    //     if (authVM.currentUser == null) {
-    //       return const AuthScreen();
-    //     }
-    //     // Show map with bottom bar if authenticated
-    //     return const BottomBar();
-    //   },
-    // );
   }
 }

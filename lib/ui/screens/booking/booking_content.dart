@@ -8,7 +8,7 @@ import 'package:velotoulouse/ui/screens/booking/widgets/booking_success_dialog.d
 import 'package:velotoulouse/ui/screens/booking/widgets/pass_confirmation_view.dart';
 import 'package:velotoulouse/ui/screens/booking/widgets/pass_selection_view.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_screen.dart';
-import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/screens/payment/view_model/payment_view_model.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
@@ -475,10 +475,9 @@ class _BookingContentState extends State<BookingContent> {
                 child: AppPrimaryButton(
                   label: 'Back to Map',
                   onPressed: () {
-                    Navigator.of(context)
-                      ..pop() // dialog
-                      ..pop() // booking screen
-                      ..pop(); // station detail
+                    final createdBooking = widget.viewModel.currentBooking;
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(createdBooking);
                   },
                 ),
               ),

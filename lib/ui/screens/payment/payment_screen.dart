@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_content.dart';
-import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/screens/payment/view_model/payment_view_model.dart';
 
 class PaymentScreen extends StatelessWidget {
   final PaymentViewModel viewModel;
