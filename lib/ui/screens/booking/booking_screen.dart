@@ -13,6 +13,7 @@ class BookingScreen extends StatelessWidget {
     super.key,
     required this.stationId,
     required this.bikeSlotId,
+    required String station,
   });
 
   @override

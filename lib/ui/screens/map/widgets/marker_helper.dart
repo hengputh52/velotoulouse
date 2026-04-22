@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// MarkerHelper — LOC-04
 /// • Orange-red pill with bike icon + count  → bikes available
 /// • Gray pill "EMPTY"                        → no bikes
 class MarkerHelper {
