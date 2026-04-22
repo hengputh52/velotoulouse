@@ -45,7 +45,10 @@ void setupServiceLocator() {
 
   // Register Screen ViewModels (Factories - new instance each time)
   getIt.registerFactory<StationDetailViewModel>(
-    () => StationDetailViewModel(getIt<StationRepository>()),
+    () => StationDetailViewModel(
+      getIt<StationRepository>(),
+      getIt<BookingRepository>(),
+    ),
   );
 
   getIt.registerFactory<PaymentViewModel>(
