@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
-import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -24,10 +22,25 @@ class PassSelectionContent extends StatefulWidget {
 }
 
 class _PassSelectionContentState extends State<PassSelectionContent> {
+  String? _loadedUserId;
+
   @override
   void initState() {
     super.initState();
     _initializePassSelection();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final authVM = context.watch<AuthViewModel>();
+    final userId = authVM.currentUser?.id;
+
+    if (userId != null && userId.isNotEmpty && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      context.read<PassSelectionViewModel>().loadActivePass(userId);
+    }
   }
 
   void _initializePassSelection() {
@@ -35,6 +48,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     final userId = authVM.currentUser?.id ?? '';
 
     if (userId.isNotEmpty) {
+      _loadedUserId = userId;
       final passVM = context.read<PassSelectionViewModel>();
       passVM.loadActivePass(userId);
     }
@@ -66,7 +80,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
     };
 
     final purpose = purposeMap[vm.selectedPassType]!;
-    final amount = PassSelectionViewModel.prices[vm.selectedPassType] ?? 0;
+    final amount = vm.selectedPassType!.price;
 
     // Initialize PaymentViewModel
     final paymentVM = context.read<PaymentViewModel>();
@@ -192,8 +206,7 @@ class _PassSelectionContentState extends State<PassSelectionContent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PassPriceTag(
-                          amount: PassSelectionViewModel
-                              .prices[vm.selectedPassType]!,
+                          amount: vm.selectedPassType!.price,
                           label: 'Total',
                         ),
                         SizedBox(height: AppSpacings.m),

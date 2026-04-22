@@ -17,6 +17,7 @@ import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/states/auth_state.dart';
+import 'package:velotoulouse/ui/states/auth_state.dart';
 
 List<InheritedProvider> get devProviders {
   return [
@@ -28,6 +29,7 @@ List<InheritedProvider> get devProviders {
     Provider<PassRepository>(create: (_) => FirebasePassRepository()),
     Provider<PaymentRepository>(create: (_) => FirebasePaymentRepository()),
     Provider<BookingRepository>(create: (_) => FirebaseBookingRepository()),
+    ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
 
     // ============================================
     // 2 - INJECT GLOBAL STATE & VIEWMODELS
@@ -45,6 +47,7 @@ List<InheritedProvider> get devProviders {
         context.read<PaymentRepository>(),
       ),
     ),
+
     ChangeNotifierProvider<PaymentViewModel>(
       create: (context) => PaymentViewModel(
         context.read<PaymentRepository>(),
@@ -52,6 +55,7 @@ List<InheritedProvider> get devProviders {
         context.read<BookingRepository>(),
       ),
     ),
+
     ChangeNotifierProvider<BookingViewModel>(
       create: (context) => BookingViewModel(
         context.read<BookingRepository>(),

@@ -14,7 +14,7 @@ class AppUserDto {
     return AppUser(
       id: json[idKey],
       email: json[emailKey],
-      displayName: json[displayNameKey] as String?,
+      displayName: json[displayNameKey],
       createdAt: DateTime.parse(json[createdAtKey]),
     );
   }

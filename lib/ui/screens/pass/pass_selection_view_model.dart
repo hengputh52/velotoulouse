@@ -84,12 +84,12 @@ class PassSelectionViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final amount = prices[_selectedPassType]!;
+      final amount = _selectedPassType!.price;
       final payment = await _paymentRepository.processPayment(
         userId: userId,
         amount: amount,
         method: method,
-        purpose: _mapPassTypeToPurpose(_selectedPassType!),
+        purpose: mapPassTypeToPurpose(_selectedPassType!),
       );
 
       _state = ViewState.success;
@@ -104,7 +104,7 @@ class PassSelectionViewModel extends ChangeNotifier {
   }
 
   // Helper to map PassType to PaymentPurpose
-  PaymentPurpose _mapPassTypeToPurpose(PassType type) {
+  PaymentPurpose mapPassTypeToPurpose(PassType type) {
     return switch (type) {
       PassType.day => PaymentPurpose.dayPass,
       PassType.monthly => PaymentPurpose.monthlyPass,

@@ -128,7 +128,7 @@ class StationViewModel extends ChangeNotifier {
       _userLocation = Location(
         id: 'user_location',
         latitude: pos.latitude,
-        longitude: pos.longitude,
+        longitude: pos.longitude, address: '', city: '',
       );
 
       if (stationsValue.isSuccess && stationsValue.data != null) {
