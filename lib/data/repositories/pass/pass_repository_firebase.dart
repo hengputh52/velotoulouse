@@ -12,29 +12,30 @@ class FirebasePassRepository implements PassRepository {
 
   @override
   Future<Pass?> getActivePass(String userId) async {
+    Pass? lastedPass;
     try {
       final http.Response response = await http.get(passesUri);
-
       if (response.statusCode == 200) {
+        if (response.body == 'null' || response.body.isEmpty) {
+          print('No active pass found');
+          return null;
+        }
         Map<String, dynamic> passesJson = json.decode(response.body);
 
         for (final entry in passesJson.entries) {
-          final pass = PassDto.fromJson(
-            entry.key,
-            entry.value as Map<String, dynamic>,
-          );
+          final pass = PassDto.fromJson(entry.key, entry.value);
 
           if (pass.userId == userId && pass.isActive) {
-            return pass;
+            lastedPass = pass;
           }
         }
-        return null;
       } else {
-        throw Exception('Failed to load passes');
+        throw Exception('No Active Pass Found');
       }
     } catch (e) {
       throw Exception('Error loading active pass: $e');
     }
+    return lastedPass;
   }
 
   @override

@@ -25,27 +25,39 @@ class PassTypeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isPrimary = isSelected;
+    final Color currentAccent = const Color(0xFFE67E22);
 
     return GestureDetector(
       onTap: isCurrentPlan ? null : onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: EdgeInsets.all(AppSpacings.l),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: isPrimary
-              ? const LinearGradient(
-                  colors: [Color(0xFF2F80ED), Color(0xFF1C5ED6)],
-                )
-              : null,
-          color: isPrimary ? null : Colors.white,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            padding: EdgeInsets.all(AppSpacings.l),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: isPrimary
+                  ? const LinearGradient(
+                      colors: [Color(0xFF2F80ED), Color(0xFF1C5ED6)],
+                    )
+                  : null,
+              color: isPrimary ? null : Colors.white,
+              border: isCurrentPlan
+                  ? Border.all(color: currentAccent, width: 2)
+                  : null,
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+                if (isCurrentPlan)
+                  BoxShadow(
+                    color: currentAccent.withOpacity(0.25),
+                    blurRadius: 16,
+                    spreadRadius: 1,
+                  ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             /// HEADER
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,10 +86,33 @@ class PassTypeCard extends StatelessWidget {
                   ],
                 ),
 
-                /// RIGHT (PRICE)
+                /// RIGHT (PRICE + CURRENT BADGE)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                    if (isCurrentPlan)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isPrimary ? Colors.white24 : currentAccent,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: isPrimary ? Colors.white70 : currentAccent,
+                          ),
+                        ),
+                        child: Text(
+                          'Current',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     Text(
                       '\$${price.toStringAsFixed(2)}',
                       style: TextStyle(
@@ -145,8 +180,31 @@ class PassTypeCard extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
+              ],
+            ),
+          ),
+          if (isCurrentPlan)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: currentAccent,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'CURRENT PLAN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
