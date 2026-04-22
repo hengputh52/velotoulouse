@@ -153,7 +153,7 @@ class _MapContentState extends State<MapContent> {
       context,
       MaterialPageRoute(
         builder: (_) => StationDetailScreen(
-          station: station,
+          stationId: station.id,
           distanceText: vm.formatDistance(station),
         ),
       ),

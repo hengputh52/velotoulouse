@@ -113,7 +113,7 @@ class PassSelectionViewModel extends ChangeNotifier {
     };
   }
 
-  PaymentPurpose mapPassTypeToPurpose(PassType selectedPassType) {
-    return _mapPassTypeToPurpose(selectedPassType);
+  PaymentPurpose mapPassTypeTopurpose(PassType selectedPassType) {
+    return mapPassTypeToPurpose(selectedPassType);
   }
 }

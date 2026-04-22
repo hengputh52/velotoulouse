@@ -63,7 +63,7 @@ class _BookingContentState extends State<BookingContent> {
             const SizedBox(height: 20),
             AppPrimaryButton(
               label: 'Retry',
-              onPressed: () => _retryLoading(context),
+              onPressed: () => widget.viewModel.loadStation(widget.stationId),
             ),
           ],
         ),
@@ -419,6 +419,7 @@ class _BookingContentState extends State<BookingContent> {
                 ),
               ),
               SizedBox(height: AppSpacings.m),
+          
 
               final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
@@ -449,6 +450,7 @@ class _BookingContentState extends State<BookingContent> {
       ),
     ];
   }
+
 
   // Navigate to payment screen
   Future<void> _goToPayment(

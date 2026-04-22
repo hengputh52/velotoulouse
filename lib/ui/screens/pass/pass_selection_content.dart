@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
+import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -29,7 +31,11 @@ class PassSelectionContent extends StatefulWidget {
     final passRepository = context.read<PassRepository>();
 
     // Create PaymentViewModel instance
-    final paymentVM = PaymentViewModel(paymentRepository, passRepository);
+    final paymentVM = PaymentViewModel(
+      paymentRepository,
+      passRepository,
+      context.read(),
+    );
 
     // Initialize payment with selected pass details
     paymentVM.init(purpose: paymentPurpose, amount: amount);
