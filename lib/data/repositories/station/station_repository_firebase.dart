@@ -48,9 +48,11 @@ class FirebaseStationRepository implements StationRepository {
 
             // Get all slots for this station
             final stationSlots = slotsData.entries
-                .where((slot) =>
-                    (slot.value as Map<String, dynamic>)['stationId'] ==
-                    stationId)
+                .where(
+                  (slot) =>
+                      (slot.value as Map<String, dynamic>)['stationId'] ==
+                      stationId,
+                )
                 .map((slot) => slot.value)
                 .toList();
 
@@ -104,8 +106,10 @@ class FirebaseStationRepository implements StationRepository {
 
           // Get slots for this specific station
           final stationSlots = slotsData.entries
-              .where((slot) =>
-                  (slot.value as Map<String, dynamic>)['stationId'] == id)
+              .where(
+                (slot) =>
+                    (slot.value as Map<String, dynamic>)['stationId'] == id,
+              )
               .map((slot) => slot.value)
               .toList();
 

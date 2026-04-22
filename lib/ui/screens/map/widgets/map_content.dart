@@ -10,7 +10,7 @@ import 'package:velotoulouse/ui/screens/map/widgets/error_banner.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/marker_helper.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/my_location.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/search_bar.dart';
-import 'package:velotoulouse/ui/screens/station/station_detail_screen.dart';
+import 'package:velotoulouse/ui/screens/station/widget/station_detail_screen.dart';
 
 /// MapContent — renders map, station markers, and active booking banner.
 class MapContent extends StatefulWidget {
@@ -77,7 +77,10 @@ class _MapContentState extends State<MapContent> {
               top: topPad + 76, // below search bar
               left: 16,
               right: 16,
-              child: ActiveBookingPanel(viewModel: activeBookingVm),
+              child: ActiveBookingPanel(
+                viewModel: activeBookingVm,
+                stationId: activeBookingVm.activeBooking?.stationId ?? '',
+              ),
             ),
 
           // ── 4. Loading spinner ────────────────────────────
@@ -153,8 +156,9 @@ class _MapContentState extends State<MapContent> {
       context,
       MaterialPageRoute(
         builder: (_) => StationDetailScreen(
-          stationId: station.id,
           distanceText: vm.formatDistance(station),
+          station: station,
+          stationId: station.id,
         ),
       ),
     );

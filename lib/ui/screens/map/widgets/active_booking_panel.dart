@@ -10,6 +10,7 @@ class ActiveBookingPanel extends StatelessWidget {
     super.key,
     required this.viewModel,
     this.onCancel,
+    required String stationId,
   });
 
   @override

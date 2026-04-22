@@ -344,7 +344,6 @@ class _BookingContentState extends State<BookingContent> {
     ];
   }
 
-
   // Navigate to payment screen
   Future<void> _goToPayment(
     BuildContext context,
