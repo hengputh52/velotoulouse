@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/model/station/station.dart';
 import 'package:velotoulouse/ui/screens/booking/booking_screen.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_screen.dart';
 import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
 import 'package:velotoulouse/ui/screens/station/widgets/bike_slot_card.dart';
-import 'package:velotoulouse/ui/screens/station/widgets/station_header_card.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
 import 'package:velotoulouse/ui/theme/theme.dart';
 import 'package:velotoulouse/ui/widgets/app_error_banner.dart';
@@ -111,10 +112,7 @@ class StationDetailContent extends StatelessWidget {
               CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(AppSpacings.l),
-                      child: StationHeaderCard(station: vm.station!),
-                    ),
+                    child: Padding(padding: EdgeInsets.all(AppSpacings.l)),
                   ),
                   SliverToBoxAdapter(
                     child: Padding(

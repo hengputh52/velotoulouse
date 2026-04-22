@@ -32,7 +32,8 @@ class PaymentContent extends StatelessWidget {
     }
 
     if (vm.state == ViewState.success && vm.completedPayment != null) {
-      final isPassPurchase = vm.purpose == PaymentPurpose.dayPass ||
+      final isPassPurchase =
+          vm.purpose == PaymentPurpose.dayPass ||
           vm.purpose == PaymentPurpose.monthlyPass ||
           vm.purpose == PaymentPurpose.annualPass;
 
@@ -87,13 +88,7 @@ class PaymentContent extends StatelessWidget {
               SizedBox(height: AppSpacings.l),
               AppPrimaryButton(
                 label: 'Continue',
-                onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const BottomBar()),
-                    (route) => false,
-                  );
-                },
+                onPressed: () => Navigator.pop(context),
               ),
             ],
           ),
@@ -192,7 +187,7 @@ class PaymentContent extends StatelessWidget {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, -2),
                       ),

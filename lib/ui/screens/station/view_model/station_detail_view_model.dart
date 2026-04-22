@@ -5,12 +5,11 @@ import 'package:velotoulouse/model/location/location.dart';
 import 'package:velotoulouse/model/station/station.dart';
 import 'package:velotoulouse/ui/utils/async_value.dart';
 
-/// US2-05: StationViewModel — loading / success / error states
-/// LOC-05: Sort stations by distance to user GPS
+//  StationViewModel — loading / success / error states
+// Sort stations by distance to user GPS
 class StationViewModel extends ChangeNotifier {
   final StationRepository stationRepository;
 
-  // US2-05: the 3 states
   AsyncValue<List<Station>> stationsValue = AsyncValue.loading();
 
   // selected station → used by detail sheet
@@ -40,7 +39,7 @@ class StationViewModel extends ChangeNotifier {
   List<Station>? get filteredStations => _filteredStations;
   String get searchQuery => _searchQuery;
 
-  /// Filter stations by search query (name, address)
+  // Filter stations by search query (name, address)
   void searchStations(String query) {
     _searchQuery = query;
 
@@ -73,7 +72,7 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Fetch stations via HTTP ────────────────────────────────
+  // ── Fetch stations via HTTP
   Future<void> fetchStations() async {
     stationsValue = AsyncValue.loading();
     notifyListeners();
@@ -87,7 +86,7 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Select station for detail sheet ───────────────────────
+  //  Select station for detail sheet
   void selectStation(Station station) {
     selectedStation = station;
     notifyListeners();
@@ -98,7 +97,7 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Get GPS + sort ─────────────────────────────────────────
+  //  Get GPS + sort
   Future<void> fetchUserLocation() async {
     _isLocating = true;
     notifyListeners();
@@ -144,7 +143,7 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── LOC-05: Sort closest first ─────────────────────────────
+  //  Sort closest first
   List<Station> _sortByDistance(List<Station> stations) {
     if (_userLocation == null) return stations;
     final sorted = List<Station>.from(stations);
@@ -156,7 +155,7 @@ class StationViewModel extends ChangeNotifier {
     return sorted;
   }
 
-  // ── Distance helpers ───────────────────────────────────────
+  //  Distance helpers
   double? distanceTo(Station s) =>
       _userLocation == null ? null : s.location.distanceTo(_userLocation!);
 

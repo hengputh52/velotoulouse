@@ -10,8 +10,8 @@ import 'package:velotoulouse/data/repositories/station/station_repository_mock.d
 import 'package:velotoulouse/data/repositories/user/mock_auth_repository.dart';
 import 'package:velotoulouse/data/repositories/user/user_repository.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
-import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
-import 'package:velotoulouse/ui/screens/map/widgets/active_booking_panel.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
+import 'package:velotoulouse/ui/screens/map/view_model/active_booking_view_model.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
 import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
@@ -31,8 +31,7 @@ void setupServiceLocator() {
 
   getIt.registerSingleton<BookingRepository>(MockBookingRepository());
 
-  // Register Global State & ViewModels (Singletons)
-  getIt.registerSingleton<AuthState>(AuthState());
+  // Register Global ViewModels (Singletons)
   getIt.registerSingleton<AuthViewModel>(
     AuthViewModel(getIt<AuthRepository>(), getIt<AuthState>()),
   );
@@ -60,7 +59,10 @@ void setupServiceLocator() {
   );
 
   // Register Screen ViewModels (Factories)
-  getIt.registerFactory<StationViewModel>(
-    () => StationViewModel(stationRepository: getIt<StationRepository>()),
+  getIt.registerFactory<StationDetailViewModel>(
+    () => StationDetailViewModel(
+      getIt<StationRepository>(),
+      getIt<BookingRepository>(),
+    ),
   );
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
 import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
+import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/states/view_state.dart';
@@ -14,6 +15,7 @@ class PaymentViewModel extends ChangeNotifier {
   ViewState _state = ViewState.loading;
   PaymentMethod _selectedMethod = PaymentMethod.card;
   Payment? _completedPayment;
+  Booking? _createdBooking;
   String? _errorMessage;
 
   late PaymentPurpose _purpose;
@@ -24,6 +26,7 @@ class PaymentViewModel extends ChangeNotifier {
   ViewState get state => _state;
   PaymentMethod get selectedMethod => _selectedMethod;
   Payment? get completedPayment => _completedPayment;
+  Booking? get createdBooking => _createdBooking;
   String? get errorMessage => _errorMessage;
   double get amount => _amount;
   PaymentPurpose get purpose => _purpose;
@@ -45,6 +48,7 @@ class PaymentViewModel extends ChangeNotifier {
     _amount = amount;
     _pendingSlotId = slotId;
     _pendingStationId = stationId;
+    _createdBooking = null;
     _state = ViewState.idle;
     _errorMessage = null;
     notifyListeners();
@@ -92,7 +96,7 @@ class PaymentViewModel extends ChangeNotifier {
       if (_purpose == PaymentPurpose.singleTicket &&
           _pendingSlotId != null &&
           _pendingStationId != null) {
-        await _bookingRepository.createBooking(
+        _createdBooking = await _bookingRepository.createBooking(
           userId: userId,
           bikeSlotId: _pendingSlotId!,
           stationId: _pendingStationId!,

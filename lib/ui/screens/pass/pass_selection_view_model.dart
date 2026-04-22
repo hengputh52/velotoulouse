@@ -112,4 +112,8 @@ class PassSelectionViewModel extends ChangeNotifier {
       PassType.single => PaymentPurpose.singleTicket,
     };
   }
+
+  PaymentPurpose mapPassTypeTopurpose(PassType selectedPassType) {
+    return mapPassTypeToPurpose(selectedPassType);
+  }
 }

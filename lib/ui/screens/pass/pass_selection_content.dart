@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/data/repositories/pass/pass_repository.dart';
+import 'package:velotoulouse/data/repositories/payment/payment_repository.dart';
 import 'package:velotoulouse/model/pass/pass.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
@@ -16,6 +18,34 @@ import 'package:velotoulouse/ui/widgets/app_primary_button.dart';
 
 class PassSelectionContent extends StatefulWidget {
   const PassSelectionContent({super.key});
+
+  void _navigateToPayment(BuildContext context, PassSelectionViewModel vm) {
+    if (vm.selectedPassType == null) return;
+
+    final selectedPassType = vm.selectedPassType!;
+    final paymentPurpose = vm.mapPassTypeToPurpose(selectedPassType);
+    final amount = selectedPassType.price;
+
+    // Get repositories from provider
+    final paymentRepository = context.read<PaymentRepository>();
+    final passRepository = context.read<PassRepository>();
+
+    // Create PaymentViewModel instance
+    final paymentVM = PaymentViewModel(
+      paymentRepository,
+      passRepository,
+      context.read(),
+    );
+
+    // Initialize payment with selected pass details
+    paymentVM.init(purpose: paymentPurpose, amount: amount);
+
+    // Navigate to payment screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PaymentScreen(viewModel: paymentVM)),
+    );
+  }
 
   @override
   State<PassSelectionContent> createState() => _PassSelectionContentState();

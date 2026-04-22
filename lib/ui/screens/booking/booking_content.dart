@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
@@ -62,7 +63,7 @@ class _BookingContentState extends State<BookingContent> {
             const SizedBox(height: 20),
             AppPrimaryButton(
               label: 'Retry',
-              onPressed: () => _retryLoading(context),
+              onPressed: () => widget.viewModel.loadStation(widget.stationId),
             ),
           ],
         ),
@@ -84,25 +85,343 @@ class _BookingContentState extends State<BookingContent> {
     }
 
     // CASE 2: User has NO active pass
-    return PassSelectionView(
-      stationName: stationName,
-      slotId: widget.bikeSlotId,
-      errorMessage: widget.viewModel.errorMessage,
-      passOptions: _buildPassOptions(context),
+    return _buildWithoutPassCase(context);
+  }
+
+  // ============================================================================
+  // CASE 1: USER HAS ACTIVE PASS - Show pass details + confirm button
+  // ============================================================================
+  Widget _buildWithPassCase(BuildContext context) {
+    final station = widget.viewModel.currentStation;
+    final pass = widget.viewModel.activePass;
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: EdgeInsets.all(AppSpacings.l),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Bike image placeholder
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppSpacings.radius),
+                child: Container(
+                  width: double.infinity,
+                  height: 200,
+                  color: const Color(0xFFD6F0EF),
+                  child: const Icon(
+                    Icons.pedal_bike,
+                    size: 120,
+                    color: Color(0xFF3CBAB3),
+                  ),
+                ),
+              ),
+              SizedBox(height: AppSpacings.l),
+
+              // Station name
+              Text(
+                station?.name.toUpperCase() ?? 'Loading...',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: AppSpacings.s),
+
+              // Slot info
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 14,
+                    color: AppColors.neutralLight,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Slot ${widget.bikeSlotId}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.neutralLight,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: AppSpacings.l),
+              const Divider(),
+              SizedBox(height: AppSpacings.l),
+
+              // Active pass banner
+              Text(
+                'Your Active Pass',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+              SizedBox(height: AppSpacings.m),
+
+              // Pass details card
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(AppSpacings.m),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  border: Border.all(color: Colors.green.shade300),
+                  borderRadius: BorderRadius.circular(AppSpacings.radius),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          pass?.type.name.toUpperCase() ?? 'PASS',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade600,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'Active',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSpacings.m),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Expires',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.neutralLight,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              pass?.expiresAt.toString().split(' ')[0] ?? 'N/A',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Days Left',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.neutralLight,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              '${pass?.daysLeft ?? 0} days',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: AppSpacings.xl),
+
+              // Error message if any
+              if (widget.viewModel.errorMessage != null)
+                Column(
+                  children: [
+                    AppErrorBanner(message: widget.viewModel.errorMessage!),
+                    SizedBox(height: AppSpacings.m),
+                  ],
+                ),
+
+              SizedBox(height: 120), // Space for sticky button
+            ],
+          ),
+        ),
+
+        // Sticky confirm button at bottom
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.all(AppSpacings.l),
+            child: AppPrimaryButton(
+              label: 'Confirm Booking',
+              isLoading: widget.viewModel.state == ViewState.loading,
+              onPressed: widget.viewModel.state != ViewState.loading
+                  ? () => _confirmBookingWithPass(context)
+                  : null,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  // Retry loading station and pass data
-  void _retryLoading(BuildContext context) {
-    widget.viewModel.loadStation(widget.stationId);
-    widget.viewModel.loadActivePass(
-      context.read<AuthViewModel>().currentUser?.id ?? '',
-    );
-  }
+  // ============================================================================
+  // CASE 2: USER HAS NO PASS - Show message + button to payment
+  // ============================================================================
+  Widget _buildWithoutPassCase(BuildContext context) {
+    final station = widget.viewModel.currentStation;
 
-  // Build pass options for users without active pass
-  List<PassOption> _buildPassOptions(BuildContext context) {
-    final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: EdgeInsets.all(AppSpacings.l),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Bike image placeholder
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppSpacings.radius),
+                child: Container(
+                  width: double.infinity,
+                  height: 200,
+                  color: const Color(0xFFD6F0EF),
+                  child: const Icon(
+                    Icons.pedal_bike,
+                    size: 120,
+                    color: Color(0xFF3CBAB3),
+                  ),
+                ),
+              ),
+              SizedBox(height: AppSpacings.l),
+
+              // Station name
+              Text(
+                station?.name.toUpperCase() ?? 'Loading...',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: AppSpacings.s),
+
+              // Slot info
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 14,
+                    color: AppColors.neutralLight,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Slot ${widget.bikeSlotId}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.neutralLight,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: AppSpacings.l),
+              const Divider(),
+              SizedBox(height: AppSpacings.l),
+
+              // Message banner
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(AppSpacings.m),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.08),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                  borderRadius: BorderRadius.circular(AppSpacings.radius),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        SizedBox(width: AppSpacings.m),
+                        Expanded(
+                          child: Text(
+                            'You need a pass or ticket to book a bike.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSpacings.m),
+                    Text(
+                      'Choose a pass type or buy a single ticket to proceed.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: AppSpacings.xl),
+
+              // Pass options grid
+              Text(
+                'Available Options',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: AppSpacings.m),
+          
+
+              final currencyFormatter = NumberFormat.simpleCurrency(name: 'EUR');
 
     return [
       PassOption(
@@ -132,8 +451,13 @@ class _BookingContentState extends State<BookingContent> {
     ];
   }
 
+
   // Navigate to payment screen
-  void _goToPayment(BuildContext context, String passType, double amount) {
+  Future<void> _goToPayment(
+    BuildContext context,
+    String passType,
+    double amount,
+  ) async {
     try {
       // Map passType string to PaymentPurpose enum
       final purposeMap = {
@@ -155,12 +479,21 @@ class _BookingContentState extends State<BookingContent> {
       );
 
       // Navigate to PaymentScreen
-      Navigator.push(
+      final Booking? createdBooking = await Navigator.push<Booking>(
         context,
         MaterialPageRoute(
           builder: (context) => PaymentScreen(viewModel: paymentViewModel),
         ),
       );
+
+      if (createdBooking != null && context.mounted) {
+        Navigator.of(context).pop(createdBooking);
+      } else {
+        final userId = context.read<AuthViewModel>().currentUser?.id ?? '';
+        if (userId.isNotEmpty) {
+          await widget.viewModel.loadActivePass(userId);
+        }
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error navigating to payment: $e')),
@@ -207,14 +540,59 @@ class _BookingContentState extends State<BookingContent> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => BookingSuccessDialog(
-        stationName: widget.viewModel.currentStation?.name ?? 'Station',
-        onBackToMap: () {
-          Navigator.of(context)
-            ..pop() // dialog
-            ..pop() // booking screen
-            ..pop(); // station detail
-        },
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacings.radiusLarge),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacings.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 48,
+                ),
+              ),
+              SizedBox(height: AppSpacings.m),
+              Text(
+                'Booking Confirmed!',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              SizedBox(height: AppSpacings.s),
+              Text(
+                'Bike at ${widget.viewModel.currentStation?.name ?? 'Station'} has been reserved.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: AppColors.neutralLight),
+              ),
+              SizedBox(height: AppSpacings.l),
+              SizedBox(
+                width: double.infinity,
+                child: AppPrimaryButton(
+                  label: 'Back to Map',
+                  onPressed: () {
+                    Navigator.of(context)
+                      ..pop() // dialog
+                      ..pop() // booking screen
+                      ..pop(); // station detail
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -13,9 +13,10 @@ import 'package:velotoulouse/main_common.dart';
 import 'package:velotoulouse/ui/screens/activity/activity_view_model.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/booking/view_model/booking_view_model.dart';
-import 'package:velotoulouse/ui/screens/map/view_model/station_view_model.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_content.dart';
 import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_view_model.dart';
 import 'package:velotoulouse/ui/states/auth_state.dart';
 import 'package:velotoulouse/ui/states/auth_state.dart';
 
@@ -62,9 +63,11 @@ List<InheritedProvider> get devProviders {
         context.read<StationRepository>(),
       ),
     ),
-    ChangeNotifierProvider<StationViewModel>(
-      create: (context) => StationViewModel(
+    ChangeNotifierProvider<StationDetailViewModel>(
+      create: (context) => StationDetailViewModel(
         stationRepository: context.read<StationRepository>(),
+
+        bookingRepository: context.read<BookingRepository>(),
       ),
     ),
     ChangeNotifierProvider<ActivityViewModel>(
