@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/payment/payment.dart';
 import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
-import 'package:velotoulouse/ui/screens/pass/pass_selection_view_model.dart';
-import 'package:velotoulouse/ui/screens/payment/payment_view_model.dart';
+import 'package:velotoulouse/ui/screens/pass/view_model/pass_selection_view_model.dart';
+import 'package:velotoulouse/ui/screens/payment/view_model/payment_view_model.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/order_summary_card.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_method_tile.dart';
 import 'package:velotoulouse/ui/screens/payment/widgets/payment_processing_overlay.dart';
@@ -88,7 +88,22 @@ class PaymentContent extends StatelessWidget {
               SizedBox(height: AppSpacings.l),
               AppPrimaryButton(
                 label: 'Continue',
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  final isTicketPurchase =
+                      vm.purpose == PaymentPurpose.singleTicket;
+
+                  Navigator.of(context).pop();
+
+                  if (isTicketPurchase && vm.createdBooking != null) {
+                    Navigator.of(context).pop(vm.createdBooking);
+                    return;
+                  }
+
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const BottomBar()),
+                    (route) => false,
+                  );
+                },
               ),
             ],
           ),

@@ -24,7 +24,7 @@ class FirebaseAuthRepository implements AuthRepository {
 
       if (response.statusCode == 200) {
         if (response.body == 'null' || response.body.isEmpty) {
-          print('❌ No users in database');
+          print(' No users in database');
           return null;
         }
 
@@ -34,48 +34,48 @@ class FirebaseAuthRepository implements AuthRepository {
         // Iterate through each user document (user_1776499923728, etc)
         for (final userEntry in usersJson.entries) {
           final userValue = userEntry.value;
-          print('🔍 Checking user group: ${userEntry.key}');
+          print(' Checking user group: ${userEntry.key}');
 
           // Handle nested structure: user_XXX -> { -OqUd...: { email, displayName, password, ... } }
           if (userValue is Map<String, dynamic>) {
             // Get the first (and usually only) nested document
             if (userValue.isNotEmpty) {
               final nestedData = userValue.values.first as Map<String, dynamic>;
-              final userEmail = nestedData['email'];
-              print('👤 Found user with email: $userEmail');
+              final userEmail = nestedData['email'] as String;
+              print(' Found user with email: $userEmail');
 
               if (userEmail == email) {
-                print('✅ Email matched!');
+                print(' Email matched!');
 
                 // Verify password
                 final storedPassword = nestedData['password'] as String?;
 
                 if (storedPassword == null || storedPassword.isEmpty) {
-                  print('⚠️ No password set - allowing login (legacy account)');
+                  print(' No password set - allowing login (legacy account)');
                   _currentUser = AppUserDto.fromJson(userEntry.key, nestedData);
                   return _currentUser;
                 }
 
                 if (storedPassword != password) {
-                  print('❌ Password mismatch!');
+                  print(' Password mismatch!');
                   return null;
                 }
 
-                print('✅ Login successful!');
+                print(' Login successful!');
                 _currentUser = AppUserDto.fromJson(userEntry.key, nestedData);
                 return _currentUser;
               }
             }
           }
         }
-        print('❌ User not found with email: $email');
+        print(' User not found with email: $email');
         return null;
       } else {
-        print('❌ Server error: ${response.statusCode}');
+        print(' Server error: ${response.statusCode}');
         throw Exception('Failed to sign in: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Login exception: $e');
+      print(' Login exception: $e');
       rethrow;
     }
   }
@@ -107,11 +107,11 @@ class FirebaseAuthRepository implements AuthRepository {
         body: json.encode(userData),
       );
 
-      print('✅ User registered successfully!');
+      print(' User registered successfully!');
       _currentUser = AppUserDto.fromJson(userId, userData);
       return _currentUser!;
     } catch (e) {
-      print('❌ Registration exception: $e');
+      print(' Registration exception: $e');
       rethrow;
     }
   }

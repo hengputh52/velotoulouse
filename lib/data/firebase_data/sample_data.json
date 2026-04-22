@@ -1,0 +1,343 @@
+{
+  "users": {
+    "user_1001": {
+      "id": "user_1001",
+      "email": "alice@gmail.com",
+      "displayName": "Alice",
+      "createdAt": "2026-04-20T09:00:00.000Z"
+    },
+    "user_1002": {
+      "id": "user_1002",
+      "email": "bob@gmail.com",
+      "displayName": "Bob",
+      "createdAt": "2026-04-20T09:10:00.000Z"
+    },
+    "user_1003": {
+      "id": "user_1003",
+      "email": "clara@gmail.com",
+      "displayName": "Clara",
+      "createdAt": "2026-04-20T09:20:00.000Z"
+    },
+    "user_1004": {
+      "id": "user_1004",
+      "email": "david@gmail.com",
+      "displayName": "David",
+      "createdAt": "2026-04-20T09:30:00.000Z"
+    },
+    "user_1005": {
+      "id": "user_1005",
+      "email": "emma@gmail.com",
+      "displayName": "Emma",
+      "createdAt": "2026-04-20T09:40:00.000Z"
+    }
+  },
+  "stations": {
+    "station_101": {
+      "id": "station_101",
+      "locationId": "loc_101",
+      "name": "Station Capitole",
+      "location": {
+        "id": "loc_101",
+        "latitude": 43.6047,
+        "longitude": 1.4442,
+        "address": "Place du Capitole",
+        "city": "Toulouse"
+      }
+    },
+    "station_102": {
+      "id": "station_102",
+      "locationId": "loc_102",
+      "name": "Station Esquirol",
+      "location": {
+        "id": "loc_102",
+        "latitude": 43.6014,
+        "longitude": 1.4429,
+        "address": "Place Esquirol",
+        "city": "Toulouse"
+      }
+    },
+    "station_103": {
+      "id": "station_103",
+      "locationId": "loc_103",
+      "name": "Station Carmes",
+      "location": {
+        "id": "loc_103",
+        "latitude": 43.5982,
+        "longitude": 1.4449,
+        "address": "Place des Carmes",
+        "city": "Toulouse"
+      }
+    },
+    "station_104": {
+      "id": "station_104",
+      "locationId": "loc_104",
+      "name": "Station Jeanne dArc",
+      "location": {
+        "id": "loc_104",
+        "latitude": 43.6111,
+        "longitude": 1.4424,
+        "address": "Boulevard de Strasbourg",
+        "city": "Toulouse"
+      }
+    },
+    "station_105": {
+      "id": "station_105",
+      "locationId": "loc_105",
+      "name": "Station Matabiau",
+      "location": {
+        "id": "loc_105",
+        "latitude": 43.6119,
+        "longitude": 1.4534,
+        "address": "Gare Matabiau",
+        "city": "Toulouse"
+      }
+    },
+    "station_106": {
+      "id": "station_106",
+      "locationId": "loc_106",
+      "name": "Station Compans",
+      "location": {
+        "id": "loc_106",
+        "latitude": 43.6100,
+        "longitude": 1.4355,
+        "address": "Boulevard Lascrosses",
+        "city": "Toulouse"
+      }
+    },
+    "station_107": {
+      "id": "station_107",
+      "locationId": "loc_107",
+      "name": "Station Saint-Cyprien",
+      "location": {
+        "id": "loc_107",
+        "latitude": 43.6000,
+        "longitude": 1.4310,
+        "address": "Place Saint-Cyprien",
+        "city": "Toulouse"
+      }
+    },
+    "station_108": {
+      "id": "station_108",
+      "locationId": "loc_108",
+      "name": "Station Purpan",
+      "location": {
+        "id": "loc_108",
+        "latitude": 43.6137,
+        "longitude": 1.3987,
+        "address": "Hopital Purpan",
+        "city": "Toulouse"
+      }
+    },
+    "station_109": {
+      "id": "station_109",
+      "locationId": "loc_109",
+      "name": "Station Rangueil",
+      "location": {
+        "id": "loc_109",
+        "latitude": 43.5620,
+        "longitude": 1.4662,
+        "address": "Avenue du Colonel Roche",
+        "city": "Toulouse"
+      }
+    },
+    "station_110": {
+      "id": "station_110",
+      "locationId": "loc_110",
+      "name": "Station Jolimont",
+      "location": {
+        "id": "loc_110",
+        "latitude": 43.6145,
+        "longitude": 1.4638,
+        "address": "Avenue Leon Blum",
+        "city": "Toulouse"
+      }
+    }
+  },
+  "slots": {
+    "slot_101_1": { "id": "slot_101_1", "stationId": "station_101", "slotNumber": 1, "isAvailable": true },
+    "slot_101_2": { "id": "slot_101_2", "stationId": "station_101", "slotNumber": 2, "isAvailable": false },
+    "slot_101_3": { "id": "slot_101_3", "stationId": "station_101", "slotNumber": 3, "isAvailable": true },
+    "slot_101_4": { "id": "slot_101_4", "stationId": "station_101", "slotNumber": 4, "isAvailable": false },
+    "slot_101_5": { "id": "slot_101_5", "stationId": "station_101", "slotNumber": 5, "isAvailable": true },
+    "slot_101_6": { "id": "slot_101_6", "stationId": "station_101", "slotNumber": 6, "isAvailable": false },
+    "slot_101_7": { "id": "slot_101_7", "stationId": "station_101", "slotNumber": 7, "isAvailable": true },
+    "slot_101_8": { "id": "slot_101_8", "stationId": "station_101", "slotNumber": 8, "isAvailable": false },
+    "slot_101_9": { "id": "slot_101_9", "stationId": "station_101", "slotNumber": 9, "isAvailable": true },
+    "slot_101_10": { "id": "slot_101_10", "stationId": "station_101", "slotNumber": 10, "isAvailable": false },
+
+    "slot_102_1": { "id": "slot_102_1", "stationId": "station_102", "slotNumber": 1, "isAvailable": true },
+    "slot_102_2": { "id": "slot_102_2", "stationId": "station_102", "slotNumber": 2, "isAvailable": false },
+    "slot_102_3": { "id": "slot_102_3", "stationId": "station_102", "slotNumber": 3, "isAvailable": true },
+    "slot_102_4": { "id": "slot_102_4", "stationId": "station_102", "slotNumber": 4, "isAvailable": false },
+    "slot_102_5": { "id": "slot_102_5", "stationId": "station_102", "slotNumber": 5, "isAvailable": true },
+    "slot_102_6": { "id": "slot_102_6", "stationId": "station_102", "slotNumber": 6, "isAvailable": false },
+    "slot_102_7": { "id": "slot_102_7", "stationId": "station_102", "slotNumber": 7, "isAvailable": true },
+    "slot_102_8": { "id": "slot_102_8", "stationId": "station_102", "slotNumber": 8, "isAvailable": false },
+    "slot_102_9": { "id": "slot_102_9", "stationId": "station_102", "slotNumber": 9, "isAvailable": true },
+    "slot_102_10": { "id": "slot_102_10", "stationId": "station_102", "slotNumber": 10, "isAvailable": false },
+
+    "slot_103_1": { "id": "slot_103_1", "stationId": "station_103", "slotNumber": 1, "isAvailable": true },
+    "slot_103_2": { "id": "slot_103_2", "stationId": "station_103", "slotNumber": 2, "isAvailable": false },
+    "slot_103_3": { "id": "slot_103_3", "stationId": "station_103", "slotNumber": 3, "isAvailable": true },
+    "slot_103_4": { "id": "slot_103_4", "stationId": "station_103", "slotNumber": 4, "isAvailable": false },
+    "slot_103_5": { "id": "slot_103_5", "stationId": "station_103", "slotNumber": 5, "isAvailable": true },
+    "slot_103_6": { "id": "slot_103_6", "stationId": "station_103", "slotNumber": 6, "isAvailable": false },
+    "slot_103_7": { "id": "slot_103_7", "stationId": "station_103", "slotNumber": 7, "isAvailable": true },
+    "slot_103_8": { "id": "slot_103_8", "stationId": "station_103", "slotNumber": 8, "isAvailable": false },
+    "slot_103_9": { "id": "slot_103_9", "stationId": "station_103", "slotNumber": 9, "isAvailable": true },
+    "slot_103_10": { "id": "slot_103_10", "stationId": "station_103", "slotNumber": 10, "isAvailable": false },
+
+    "slot_104_1": { "id": "slot_104_1", "stationId": "station_104", "slotNumber": 1, "isAvailable": true },
+    "slot_104_2": { "id": "slot_104_2", "stationId": "station_104", "slotNumber": 2, "isAvailable": false },
+    "slot_104_3": { "id": "slot_104_3", "stationId": "station_104", "slotNumber": 3, "isAvailable": true },
+    "slot_104_4": { "id": "slot_104_4", "stationId": "station_104", "slotNumber": 4, "isAvailable": false },
+    "slot_104_5": { "id": "slot_104_5", "stationId": "station_104", "slotNumber": 5, "isAvailable": true },
+    "slot_104_6": { "id": "slot_104_6", "stationId": "station_104", "slotNumber": 6, "isAvailable": false },
+    "slot_104_7": { "id": "slot_104_7", "stationId": "station_104", "slotNumber": 7, "isAvailable": true },
+    "slot_104_8": { "id": "slot_104_8", "stationId": "station_104", "slotNumber": 8, "isAvailable": false },
+    "slot_104_9": { "id": "slot_104_9", "stationId": "station_104", "slotNumber": 9, "isAvailable": true },
+    "slot_104_10": { "id": "slot_104_10", "stationId": "station_104", "slotNumber": 10, "isAvailable": false },
+
+    "slot_105_1": { "id": "slot_105_1", "stationId": "station_105", "slotNumber": 1, "isAvailable": true },
+    "slot_105_2": { "id": "slot_105_2", "stationId": "station_105", "slotNumber": 2, "isAvailable": false },
+    "slot_105_3": { "id": "slot_105_3", "stationId": "station_105", "slotNumber": 3, "isAvailable": true },
+    "slot_105_4": { "id": "slot_105_4", "stationId": "station_105", "slotNumber": 4, "isAvailable": false },
+    "slot_105_5": { "id": "slot_105_5", "stationId": "station_105", "slotNumber": 5, "isAvailable": true },
+    "slot_105_6": { "id": "slot_105_6", "stationId": "station_105", "slotNumber": 6, "isAvailable": false },
+    "slot_105_7": { "id": "slot_105_7", "stationId": "station_105", "slotNumber": 7, "isAvailable": true },
+    "slot_105_8": { "id": "slot_105_8", "stationId": "station_105", "slotNumber": 8, "isAvailable": false },
+    "slot_105_9": { "id": "slot_105_9", "stationId": "station_105", "slotNumber": 9, "isAvailable": true },
+    "slot_105_10": { "id": "slot_105_10", "stationId": "station_105", "slotNumber": 10, "isAvailable": false },
+
+    "slot_106_1": { "id": "slot_106_1", "stationId": "station_106", "slotNumber": 1, "isAvailable": true },
+    "slot_106_2": { "id": "slot_106_2", "stationId": "station_106", "slotNumber": 2, "isAvailable": false },
+    "slot_106_3": { "id": "slot_106_3", "stationId": "station_106", "slotNumber": 3, "isAvailable": true },
+    "slot_106_4": { "id": "slot_106_4", "stationId": "station_106", "slotNumber": 4, "isAvailable": false },
+    "slot_106_5": { "id": "slot_106_5", "stationId": "station_106", "slotNumber": 5, "isAvailable": true },
+    "slot_106_6": { "id": "slot_106_6", "stationId": "station_106", "slotNumber": 6, "isAvailable": false },
+    "slot_106_7": { "id": "slot_106_7", "stationId": "station_106", "slotNumber": 7, "isAvailable": true },
+    "slot_106_8": { "id": "slot_106_8", "stationId": "station_106", "slotNumber": 8, "isAvailable": false },
+    "slot_106_9": { "id": "slot_106_9", "stationId": "station_106", "slotNumber": 9, "isAvailable": true },
+    "slot_106_10": { "id": "slot_106_10", "stationId": "station_106", "slotNumber": 10, "isAvailable": false },
+
+    "slot_107_1": { "id": "slot_107_1", "stationId": "station_107", "slotNumber": 1, "isAvailable": true },
+    "slot_107_2": { "id": "slot_107_2", "stationId": "station_107", "slotNumber": 2, "isAvailable": false },
+    "slot_107_3": { "id": "slot_107_3", "stationId": "station_107", "slotNumber": 3, "isAvailable": true },
+    "slot_107_4": { "id": "slot_107_4", "stationId": "station_107", "slotNumber": 4, "isAvailable": false },
+    "slot_107_5": { "id": "slot_107_5", "stationId": "station_107", "slotNumber": 5, "isAvailable": true },
+    "slot_107_6": { "id": "slot_107_6", "stationId": "station_107", "slotNumber": 6, "isAvailable": false },
+    "slot_107_7": { "id": "slot_107_7", "stationId": "station_107", "slotNumber": 7, "isAvailable": true },
+    "slot_107_8": { "id": "slot_107_8", "stationId": "station_107", "slotNumber": 8, "isAvailable": false },
+    "slot_107_9": { "id": "slot_107_9", "stationId": "station_107", "slotNumber": 9, "isAvailable": true },
+    "slot_107_10": { "id": "slot_107_10", "stationId": "station_107", "slotNumber": 10, "isAvailable": false },
+
+    "slot_108_1": { "id": "slot_108_1", "stationId": "station_108", "slotNumber": 1, "isAvailable": true },
+    "slot_108_2": { "id": "slot_108_2", "stationId": "station_108", "slotNumber": 2, "isAvailable": false },
+    "slot_108_3": { "id": "slot_108_3", "stationId": "station_108", "slotNumber": 3, "isAvailable": true },
+    "slot_108_4": { "id": "slot_108_4", "stationId": "station_108", "slotNumber": 4, "isAvailable": false },
+    "slot_108_5": { "id": "slot_108_5", "stationId": "station_108", "slotNumber": 5, "isAvailable": true },
+    "slot_108_6": { "id": "slot_108_6", "stationId": "station_108", "slotNumber": 6, "isAvailable": false },
+    "slot_108_7": { "id": "slot_108_7", "stationId": "station_108", "slotNumber": 7, "isAvailable": true },
+    "slot_108_8": { "id": "slot_108_8", "stationId": "station_108", "slotNumber": 8, "isAvailable": false },
+    "slot_108_9": { "id": "slot_108_9", "stationId": "station_108", "slotNumber": 9, "isAvailable": true },
+    "slot_108_10": { "id": "slot_108_10", "stationId": "station_108", "slotNumber": 10, "isAvailable": false },
+
+    "slot_109_1": { "id": "slot_109_1", "stationId": "station_109", "slotNumber": 1, "isAvailable": true },
+    "slot_109_2": { "id": "slot_109_2", "stationId": "station_109", "slotNumber": 2, "isAvailable": false },
+    "slot_109_3": { "id": "slot_109_3", "stationId": "station_109", "slotNumber": 3, "isAvailable": true },
+    "slot_109_4": { "id": "slot_109_4", "stationId": "station_109", "slotNumber": 4, "isAvailable": false },
+    "slot_109_5": { "id": "slot_109_5", "stationId": "station_109", "slotNumber": 5, "isAvailable": true },
+    "slot_109_6": { "id": "slot_109_6", "stationId": "station_109", "slotNumber": 6, "isAvailable": false },
+    "slot_109_7": { "id": "slot_109_7", "stationId": "station_109", "slotNumber": 7, "isAvailable": true },
+    "slot_109_8": { "id": "slot_109_8", "stationId": "station_109", "slotNumber": 8, "isAvailable": false },
+    "slot_109_9": { "id": "slot_109_9", "stationId": "station_109", "slotNumber": 9, "isAvailable": true },
+    "slot_109_10": { "id": "slot_109_10", "stationId": "station_109", "slotNumber": 10, "isAvailable": false },
+
+    "slot_110_1": { "id": "slot_110_1", "stationId": "station_110", "slotNumber": 1, "isAvailable": true },
+    "slot_110_2": { "id": "slot_110_2", "stationId": "station_110", "slotNumber": 2, "isAvailable": false },
+    "slot_110_3": { "id": "slot_110_3", "stationId": "station_110", "slotNumber": 3, "isAvailable": true },
+    "slot_110_4": { "id": "slot_110_4", "stationId": "station_110", "slotNumber": 4, "isAvailable": false },
+    "slot_110_5": { "id": "slot_110_5", "stationId": "station_110", "slotNumber": 5, "isAvailable": true },
+    "slot_110_6": { "id": "slot_110_6", "stationId": "station_110", "slotNumber": 6, "isAvailable": false },
+    "slot_110_7": { "id": "slot_110_7", "stationId": "station_110", "slotNumber": 7, "isAvailable": true },
+    "slot_110_8": { "id": "slot_110_8", "stationId": "station_110", "slotNumber": 8, "isAvailable": false },
+    "slot_110_9": { "id": "slot_110_9", "stationId": "station_110", "slotNumber": 9, "isAvailable": true },
+    "slot_110_10": { "id": "slot_110_10", "stationId": "station_110", "slotNumber": 10, "isAvailable": false }
+  },
+  "payments": {
+    "payment_5001": {
+      "id": "payment_5001",
+      "userId": "user_1001",
+      "amount": 1.5,
+      "method": "card",
+      "status": "success",
+      "purpose": "singleTicket",
+      "createdAt": "2026-04-21T08:00:00.000Z"
+    },
+    "payment_5002": {
+      "id": "payment_5002",
+      "userId": "user_1002",
+      "amount": 5,
+      "method": "mobileMoney",
+      "status": "success",
+      "purpose": "dayPass",
+      "createdAt": "2026-04-21T08:05:00.000Z"
+    },
+    "payment_5003": {
+      "id": "payment_5003",
+      "userId": "user_1003",
+      "amount": 15,
+      "method": "card",
+      "status": "success",
+      "purpose": "monthlyPass",
+      "createdAt": "2026-04-21T08:10:00.000Z"
+    },
+    "payment_5004": {
+      "id": "payment_5004",
+      "userId": "user_1004",
+      "amount": 99,
+      "method": "card",
+      "status": "success",
+      "purpose": "annualPass",
+      "createdAt": "2026-04-21T08:15:00.000Z"
+    }
+  },
+  "passes": {
+    "pass_6001": {
+      "id": "pass_6001",
+      "userId": "user_1002",
+      "paymentId": "payment_5002",
+      "type": "day",
+      "purchasedAt": "2026-04-21T08:05:00.000Z",
+      "expiresAt": "2026-04-22T08:05:00.000Z"
+    },
+    "pass_6002": {
+      "id": "pass_6002",
+      "userId": "user_1003",
+      "paymentId": "payment_5003",
+      "type": "monthly",
+      "purchasedAt": "2026-04-21T08:10:00.000Z",
+      "expiresAt": "2026-05-21T08:10:00.000Z"
+    },
+    "pass_6003": {
+      "id": "pass_6003",
+      "userId": "user_1004",
+      "paymentId": "payment_5004",
+      "type": "annual",
+      "purchasedAt": "2026-04-21T08:15:00.000Z",
+      "expiresAt": "2027-04-21T08:15:00.000Z"
+    }
+  },
+  "bookings": {
+    "booking_7001": {
+      "id": "booking_7001",
+      "userId": "user_1001",
+      "bikeSlotId": "slot_101_1",
+      "stationId": "station_101",
+      "paymentId": "payment_5001",
+      "passId": null,
+      "status": "completed",
+      "bookedAt": "2026-04-21T08:01:00.000Z"
+    }
+  }
+}

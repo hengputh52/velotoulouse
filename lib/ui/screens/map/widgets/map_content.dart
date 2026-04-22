@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
 import 'package:velotoulouse/model/station/station.dart';
+import 'package:velotoulouse/ui/screens/auth/auth_view_model.dart';
 import 'package:velotoulouse/ui/screens/map/view_model/active_booking_view_model.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/active_booking_panel.dart';
 import 'package:velotoulouse/ui/screens/station/view_model/station_detail_view_model.dart';
@@ -10,7 +11,8 @@ import 'package:velotoulouse/ui/screens/map/widgets/error_banner.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/marker_helper.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/my_location.dart';
 import 'package:velotoulouse/ui/screens/map/widgets/search_bar.dart';
-import 'package:velotoulouse/ui/screens/station/widget/station_detail_screen.dart';
+import 'package:velotoulouse/ui/screens/station/station_detail_screen.dart';
+import 'package:velotoulouse/ui/states/active_booking_state.dart';
 
 /// MapContent — renders map, station markers, and active booking banner.
 class MapContent extends StatefulWidget {
@@ -29,9 +31,25 @@ class _MapContentState extends State<MapContent> {
   static const LatLng _toulouseCenter = LatLng(43.6047, 1.4442);
 
   @override
+  void initState() {
+    super.initState();
+    _loadActiveBooking();
+  }
+
+  void _loadActiveBooking() {
+    final userId = context.read<AuthViewModel>().currentUser?.id ?? '';
+    if (userId.isEmpty) {
+      return;
+    }
+
+    context.read<ActiveBookingViewModel>().loadActiveBooking(userId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final stationVm = context.watch<StationViewModel>();
-    final activeBookingVm = context.watch<ActiveBookingViewModel>();
+    final activeBookingState = context.watch<ActiveBookingState>();
+    final activeBookingVm = context.read<ActiveBookingViewModel>();
 
     final List<Station>? displayList = stationVm.stationsValue.isSuccess
         ? (stationVm.filteredStations ?? stationVm.stationsValue.data)
@@ -72,14 +90,15 @@ class _MapContentState extends State<MapContent> {
           ),
 
           // ── 3. Current Ride banner (below search bar) ─────
-          if (activeBookingVm.activeBooking != null)
+          if (activeBookingState.activeBooking != null)
             Positioned(
               top: topPad + 76, // below search bar
               left: 16,
               right: 16,
               child: ActiveBookingPanel(
                 viewModel: activeBookingVm,
-                stationId: activeBookingVm.activeBooking?.stationId ?? '',
+                state: activeBookingState,
+                stationId: activeBookingState.activeBooking?.stationId ?? '',
               ),
             ),
 
@@ -98,7 +117,7 @@ class _MapContentState extends State<MapContent> {
 
           // ── 6. Location FAB ───────────────────────────────
           Positioned(
-            bottom: activeBookingVm.activeBooking != null ? 220 : 32,
+            bottom: activeBookingState.activeBooking != null ? 220 : 32,
             right: 16,
             child: LocationFabWidget(
               isLocating: stationVm.isLocating,

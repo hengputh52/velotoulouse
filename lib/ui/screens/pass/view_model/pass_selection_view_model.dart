@@ -14,24 +14,6 @@ class PassSelectionViewModel extends ChangeNotifier {
   Pass? _activePass;
   String? _errorMessage;
 
-  static const Map<PassType, double> prices = {
-    PassType.day: 5.00,
-    PassType.monthly: 15.00,
-    PassType.annual: 99.00,
-  };
-
-  static const Map<PassType, String> descriptions = {
-    PassType.day: 'Valid for 24 hours from activation',
-    PassType.monthly: 'Valid for 30 days from activation',
-    PassType.annual: 'Valid for 365 days from activation',
-  };
-
-  static const Map<PassType, String> durations = {
-    PassType.day: '24h',
-    PassType.monthly: '30 days',
-    PassType.annual: '1 year',
-  };
-
   ViewState get state => _state;
   PassType? get selectedPassType => _selectedPassType;
   Pass? get activePass => _activePass;
