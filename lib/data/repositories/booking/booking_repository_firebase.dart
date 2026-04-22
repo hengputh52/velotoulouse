@@ -86,20 +86,30 @@ class FirebaseBookingRepository implements BookingRepository {
       final http.Response response = await http.get(bookingsUri);
 
       if (response.statusCode == 200) {
+        if (response.body == 'null' || response.body.isEmpty) {
+          return null;
+        }
+
         Map<String, dynamic> bookingsJson = json.decode(response.body);
 
         for (final entry in bookingsJson.entries) {
-          final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
+          try {
+            final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
-          if (booking.userId == userId && booking.status == BookingStatus.confirmed) {
-            return booking;
+            if (booking.userId == userId && booking.status == BookingStatus.confirmed) {
+              return booking;
+            }
+          } catch (e) {
+            print('⚠️ Skipping malformed booking ${entry.key}: $e');
+            continue;
           }
         }
         return null;
       } else {
-        throw Exception('Failed to load bookings');
+        throw Exception('Failed to load bookings: ${response.statusCode}');
       }
     } catch (e) {
+      print('❌ Error loading active booking: $e');
       rethrow;
     }
   }
@@ -110,21 +120,31 @@ class FirebaseBookingRepository implements BookingRepository {
       final http.Response response = await http.get(bookingsUri);
 
       if (response.statusCode == 200) {
+        if (response.body == 'null' || response.body.isEmpty) {
+          return [];
+        }
+
         Map<String, dynamic> bookingsJson = json.decode(response.body);
         List<Booking> result = [];
 
         for (final entry in bookingsJson.entries) {
-          final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
+          try {
+            final booking = BookingDto.fromJson(entry.key, entry.value as Map<String, dynamic>);
 
-          if (booking.userId == userId) {
-            result.add(booking);
+            if (booking.userId == userId) {
+              result.add(booking);
+            }
+          } catch (e) {
+            print('⚠️ Skipping malformed booking ${entry.key}: $e');
+            continue;
           }
         }
         return result;
       } else {
-        throw Exception('Failed to load booking history');
+        throw Exception('Failed to load booking history: ${response.statusCode}');
       }
     } catch (e) {
+      print('❌ Error loading booking history: $e');
       rethrow;
     }
   }

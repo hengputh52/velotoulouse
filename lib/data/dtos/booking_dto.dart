@@ -11,22 +11,29 @@ class BookingDto {
   static const String bookedAtKey = 'bookedAt';
 
   static Booking fromJson(String id, Map<String, dynamic> json) {
-    assert(json[idKey] is String);
-    assert(json[userIdKey] is String);
-    assert(json[bikeSlotIdKey] is String);
-    assert(json[stationIdKey] is String);
-    assert(json[statusKey] is String);
-    assert(json[bookedAtKey] is String);
+    final bookingId = json[idKey] as String?;
+    final userId = json[userIdKey] as String?;
+    final bikeSlotId = json[bikeSlotIdKey] as String?;
+    final stationId = json[stationIdKey] as String?;
+    final statusStr = json[statusKey] as String?;
+    final bookedAtStr = json[bookedAtKey] as String?;
+
+    assert(bookingId != null && bookingId.isNotEmpty, 'Booking missing id');
+    assert(userId != null && userId.isNotEmpty, 'Booking $id missing userId');
+    assert(bikeSlotId != null && bikeSlotId.isNotEmpty, 'Booking $id missing bikeSlotId');
+    assert(stationId != null && stationId.isNotEmpty, 'Booking $id missing stationId');
+    assert(statusStr != null && statusStr.isNotEmpty, 'Booking $id missing status');
+    assert(bookedAtStr != null && bookedAtStr.isNotEmpty, 'Booking $id missing bookedAt');
 
     return Booking(
-      id: json[idKey],
-      userId: json[userIdKey],
-      bikeSlotId: json[bikeSlotIdKey],
-      stationId: json[stationIdKey],
+      id: bookingId!,
+      userId: userId!,
+      bikeSlotId: bikeSlotId!,
+      stationId: stationId!,
       paymentId: json[paymentIdKey] as String?,
       passId: json[passIdKey] as String?,
-      status: BookingStatus.values.byName(json[statusKey]),
-      bookedAt: DateTime.parse(json[bookedAtKey]),
+      status: BookingStatus.values.byName(statusStr!),
+      bookedAt: DateTime.parse(bookedAtStr!),
     );
   }
 

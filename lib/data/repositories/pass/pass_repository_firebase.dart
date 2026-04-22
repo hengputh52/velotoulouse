@@ -17,23 +17,32 @@ class FirebasePassRepository implements PassRepository {
       final http.Response response = await http.get(passesUri);
       if (response.statusCode == 200) {
         if (response.body == 'null' || response.body.isEmpty) {
-          print('No active pass found');
+          print('✓ No active pass found for user');
           return null;
         }
         Map<String, dynamic> passesJson = json.decode(response.body);
 
         for (final entry in passesJson.entries) {
-          final pass = PassDto.fromJson(entry.key, entry.value);
+          try {
+            final pass = PassDto.fromJson(
+              entry.key,
+              entry.value as Map<String, dynamic>,
+            );
 
-          if (pass.userId == userId && pass.isActive) {
-            lastedPass = pass;
+            if (pass.userId == userId && pass.isActive) {
+              lastedPass = pass;
+            }
+          } catch (e) {
+            print('⚠️ Skipping malformed pass ${entry.key}: $e');
+            continue;
           }
         }
       } else {
-        throw Exception('No Active Pass Found');
+        throw Exception('No Active Pass Found: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error loading active pass: $e');
+      print('❌ Error loading active pass: $e');
+      rethrow;
     }
     return lastedPass;
   }
@@ -44,25 +53,35 @@ class FirebasePassRepository implements PassRepository {
       final http.Response response = await http.get(passesUri);
 
       if (response.statusCode == 200) {
+        if (response.body == 'null' || response.body.isEmpty) {
+          return [];
+        }
+
         Map<String, dynamic> passesJson = json.decode(response.body);
         List<Pass> result = [];
 
         for (final entry in passesJson.entries) {
-          final pass = PassDto.fromJson(
-            entry.key,
-            entry.value as Map<String, dynamic>,
-          );
+          try {
+            final pass = PassDto.fromJson(
+              entry.key,
+              entry.value as Map<String, dynamic>,
+            );
 
-          if (pass.userId == userId) {
-            result.add(pass);
+            if (pass.userId == userId) {
+              result.add(pass);
+            }
+          } catch (e) {
+            print('⚠️ Skipping malformed pass ${entry.key}: $e');
+            continue;
           }
         }
         return result;
       } else {
-        throw Exception('Failed to load pass history');
+        throw Exception('Failed to load pass history: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error loading pass history: $e');
+      print('❌ Error loading pass history: $e');
+      rethrow;
     }
   }
 
@@ -91,7 +110,7 @@ class FirebasePassRepository implements PassRepository {
         'expiresAt': now.add(validity).toIso8601String(),
       };
 
-      await http.post(
+      await http.put(
         Uri.https(
           'velotoulouse-42876-default-rtdb.firebaseio.com',
           '/passes/$passId.json',

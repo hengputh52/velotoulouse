@@ -34,7 +34,6 @@ List<InheritedProvider> get devProviders {
     // ============================================
     // 2 - INJECT GLOBAL STATE & VIEWMODELS
     // ============================================
-    ChangeNotifierProvider<AuthState>(create: (_) => AuthState()),
     ChangeNotifierProvider<AuthViewModel>(
       create: (context) => AuthViewModel(
         context.read<AuthRepository>(),
