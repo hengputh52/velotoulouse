@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:velotoulouse/data/repositories/booking/booking_repository.dart';
 import 'package:velotoulouse/model/booking/booking.dart';
@@ -8,6 +9,7 @@ class ActiveBookingViewModel {
   final BookingRepository _bookingRepository;
   final ActiveBookingState _state;
   Timer? _timer;
+  VoidCallback? onBookingChanged;
 
   ActiveBookingViewModel(this._bookingRepository, this._state);
 
@@ -27,7 +29,6 @@ class ActiveBookingViewModel {
       clearBooking();
       return;
     }
-
     _state.setActiveBooking(booking);
     _startTimerFrom(booking.bookedAt);
   }
@@ -37,9 +38,16 @@ class ActiveBookingViewModel {
       clearBooking();
       return;
     }
-
     _state.setActiveBooking(booking, stationName: stationName);
     _startTimerFrom(booking.bookedAt);
+
+    onBookingChanged?.call();
+  }
+
+  Future<void> cancelBooking(String bookingId) async {
+    await _bookingRepository.cancelBooking(bookingId);
+    clearBooking();
+    onBookingChanged?.call();
   }
 
   void clearBooking() {
@@ -72,7 +80,7 @@ class ActiveBookingViewModel {
     final m = minute.toString().padLeft(2, '0');
     final s = second.toString().padLeft(2, '0');
 
-    return "$h:$m:$s";
+    return '$h:$m:$s';
   }
 
   void dispose() {

@@ -14,7 +14,6 @@ import 'package:velotoulouse/ui/screens/map/widgets/search_bar.dart';
 import 'package:velotoulouse/ui/screens/station/station_detail_screen.dart';
 import 'package:velotoulouse/ui/states/active_booking_state.dart';
 
-/// MapContent — renders map, station markers, and active booking banner.
 class MapContent extends StatefulWidget {
   const MapContent({super.key});
 
@@ -27,7 +26,6 @@ class _MapContentState extends State<MapContent> {
   Set<Marker> _markers = {};
   List<Station>? _lastBuiltStations;
 
-  // Toulouse city centre — matches data.json
   static const LatLng _toulouseCenter = LatLng(43.6047, 1.4442);
 
   @override
@@ -38,11 +36,29 @@ class _MapContentState extends State<MapContent> {
 
   void _loadActiveBooking() {
     final userId = context.read<AuthViewModel>().currentUser?.id ?? '';
-    if (userId.isEmpty) {
-      return;
-    }
+    if (userId.isEmpty) return;
 
-    context.read<ActiveBookingViewModel>().loadActiveBooking(userId);
+    final activeBookingVm = context.read<ActiveBookingViewModel>();
+    activeBookingVm.onBookingChanged = _onBookingChanged;
+
+    activeBookingVm.loadActiveBooking(userId);
+  }
+
+  void _onBookingChanged() {
+    if (!mounted) return;
+    final stationVm = context.read<StationViewModel>();
+    stationVm.refreshAfterBooking().then((_) {
+      if (mounted) {
+        setState(() => _lastBuiltStations = null);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    context.read<ActiveBookingViewModel>().onBookingChanged = null;
+    _mapController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,9 +70,7 @@ class _MapContentState extends State<MapContent> {
     final List<Station>? displayList = stationVm.stationsValue.isSuccess
         ? (stationVm.filteredStations ?? stationVm.stationsValue.data)
         : null;
-
-    // Rebuild markers only when the displayed station list changes
-    if (displayList != null && displayList != _lastBuiltStations) {
+    if (displayList != null && !identical(displayList, _lastBuiltStations)) {
       _lastBuiltStations = displayList;
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _buildMarkers(displayList, stationVm),
@@ -68,7 +82,7 @@ class _MapContentState extends State<MapContent> {
     return Scaffold(
       body: Stack(
         children: [
-          // ── 1. Google Map ─────────────────────────────────
+          // ── 1. Google Map
           GoogleMap(
             initialCameraPosition: const CameraPosition(
               target: _toulouseCenter,
@@ -81,7 +95,7 @@ class _MapContentState extends State<MapContent> {
             onMapCreated: (c) => _mapController = c,
           ),
 
-          // ── 2. Search bar ─────────────────────────────────
+          // ── 2. Search bar
           Positioned(
             top: topPad + 12,
             left: 16,
@@ -89,10 +103,10 @@ class _MapContentState extends State<MapContent> {
             child: const SearchBarWidget(),
           ),
 
-          // ── 3. Current Ride banner (below search bar) ─────
+          // ── 3. Active booking banner
           if (activeBookingState.activeBooking != null)
             Positioned(
-              top: topPad + 76, // below search bar
+              top: topPad + 76,
               left: 16,
               right: 16,
               child: ActiveBookingPanel(
@@ -102,11 +116,11 @@ class _MapContentState extends State<MapContent> {
               ),
             ),
 
-          // ── 4. Loading spinner ────────────────────────────
+          // ── 4. Loading spinner
           if (stationVm.stationsValue.isLoading)
             const Center(child: CircularProgressIndicator()),
 
-          // ── 5. Error banner ───────────────────────────────
+          // ── 5. Error banner
           if (stationVm.stationsValue.isError)
             Positioned(
               top: topPad + 80,
@@ -115,7 +129,7 @@ class _MapContentState extends State<MapContent> {
               child: ErrorBanner(onRetry: stationVm.fetchStations),
             ),
 
-          // ── 6. Location FAB ───────────────────────────────
+          // ── 6. Location FAB
           Positioned(
             bottom: activeBookingState.activeBooking != null ? 220 : 32,
             right: 16,
@@ -149,7 +163,6 @@ class _MapContentState extends State<MapContent> {
     final Set<Marker> newMarkers = {};
 
     for (final station in stations) {
-      // Always display numeric availability marker, including 0.
       final icon = await MarkerHelper.numbered(station.availableCount);
 
       newMarkers.add(
@@ -182,7 +195,9 @@ class _MapContentState extends State<MapContent> {
       ),
     );
 
-    if (createdBooking != null && mounted) {
+    if (!mounted) return;
+
+    if (createdBooking != null) {
       context.read<ActiveBookingViewModel>().setActiveBooking(
         createdBooking,
         stationName: station.name,
