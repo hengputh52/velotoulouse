@@ -5,22 +5,24 @@ import 'package:velotoulouse/model/location/location.dart';
 import 'package:velotoulouse/model/station/station.dart';
 import 'package:velotoulouse/ui/utils/async_value.dart';
 
-//  StationViewModel — loading / success / error states
-// Sort stations by distance to user GPS
 class StationViewModel extends ChangeNotifier {
   final StationRepository stationRepository;
 
   AsyncValue<List<Station>> stationsValue = AsyncValue.loading();
 
-  // selected station → used by detail sheet
   Station? selectedStation;
 
-  // user GPS location
   Location? _userLocation;
   Location? get userLocation => _userLocation;
 
   bool _isLocating = false;
   bool get isLocating => _isLocating;
+
+  List<Station>? _filteredStations;
+  String _searchQuery = '';
+
+  List<Station>? get filteredStations => _filteredStations;
+  String get searchQuery => _searchQuery;
 
   StationViewModel({required this.stationRepository}) {
     _init();
@@ -31,15 +33,23 @@ class StationViewModel extends ChangeNotifier {
     await fetchUserLocation();
   }
 
-  // Add this to StationViewModel class:
+  Future<void> refreshAfterBooking() async {
+    try {
+      final List<Station> stations = await stationRepository.getStations();
+      final sorted = _sortByDistance(stations);
+      stationsValue = AsyncValue.success(sorted);
 
-  List<Station>? _filteredStations;
-  String _searchQuery = '';
+      if (_searchQuery.isNotEmpty) {
+        _filteredStations = _applyFilter(sorted, _searchQuery);
+      } else {
+        _filteredStations = null;
+      }
+    } catch (e) {
+      debugPrint('Background station refresh failed: $e');
+    }
+    notifyListeners();
+  }
 
-  List<Station>? get filteredStations => _filteredStations;
-  String get searchQuery => _searchQuery;
-
-  // Filter stations by search query (name, address)
   void searchStations(String query) {
     _searchQuery = query;
 
@@ -50,20 +60,24 @@ class StationViewModel extends ChangeNotifier {
     }
 
     if (query.isEmpty) {
-      _filteredStations = null; // Show all when empty
+      _filteredStations = null;
     } else {
-      _filteredStations = stationsValue.data!
-          .where(
-            (station) =>
-                station.name.toUpperCase().contains(query.toUpperCase()) ||
-                station.address!.toUpperCase().contains(query.toUpperCase()),
-          )
-          .toList();
-      // Keep sorted by distance
-      _filteredStations = _sortByDistance(_filteredStations!);
+      _filteredStations = _applyFilter(stationsValue.data!, query);
     }
 
     notifyListeners();
+  }
+
+  List<Station> _applyFilter(List<Station> stations, String query) {
+    final q = query.toUpperCase();
+    final filtered = stations
+        .where(
+          (s) =>
+              s.name.toUpperCase().contains(q) ||
+              (s.address?.toUpperCase().contains(q) ?? false),
+        )
+        .toList();
+    return _sortByDistance(filtered);
   }
 
   void clearSearch() {
@@ -72,7 +86,6 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── Fetch stations via HTTP
   Future<void> fetchStations() async {
     stationsValue = AsyncValue.loading();
     notifyListeners();
@@ -86,7 +99,6 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //  Select station for detail sheet
   void selectStation(Station station) {
     selectedStation = station;
     notifyListeners();
@@ -97,7 +109,6 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //  Get GPS + sort
   Future<void> fetchUserLocation() async {
     _isLocating = true;
     notifyListeners();
@@ -145,7 +156,6 @@ class StationViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //  Sort closest first
   List<Station> _sortByDistance(List<Station> stations) {
     if (_userLocation == null) return stations;
     final sorted = List<Station>.from(stations);
@@ -157,7 +167,6 @@ class StationViewModel extends ChangeNotifier {
     return sorted;
   }
 
-  //  Distance helpers
   double? distanceTo(Station s) =>
       _userLocation == null ? null : s.location.distanceTo(_userLocation!);
 

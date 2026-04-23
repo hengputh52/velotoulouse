@@ -70,4 +70,10 @@ class MockBookingRepository implements BookingRepository {
   Future<void> cancelBooking(String bookingId) async {
     await Future.delayed(const Duration(milliseconds: 600));
   }
+  
+  @override
+  Future<bool> hasCurrentBooking(String userId) {
+    // TODO: implement hasCurrentBooking
+    throw UnimplementedError();
+  }
 }

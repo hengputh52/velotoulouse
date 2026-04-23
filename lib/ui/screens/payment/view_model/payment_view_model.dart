@@ -12,7 +12,7 @@ class PaymentViewModel extends ChangeNotifier {
   final PassRepository _passRepository;
   final BookingRepository _bookingRepository;
 
-  ViewState _state = ViewState.loading;
+  ViewState _state = ViewState.idle;
   PaymentMethod _selectedMethod = PaymentMethod.card;
   Payment? _completedPayment;
   Booking? _createdBooking;
@@ -37,7 +37,6 @@ class PaymentViewModel extends ChangeNotifier {
     this._bookingRepository,
   );
 
-  // Initialize with route parameters
   void init({
     required PaymentPurpose purpose,
     required double amount,
@@ -48,26 +47,25 @@ class PaymentViewModel extends ChangeNotifier {
     _amount = amount;
     _pendingSlotId = slotId;
     _pendingStationId = stationId;
+    _completedPayment = null;
     _createdBooking = null;
     _state = ViewState.idle;
     _errorMessage = null;
     notifyListeners();
   }
 
-  // Select payment method
   void selectMethod(PaymentMethod method) {
     _selectedMethod = method;
     notifyListeners();
   }
 
-  // Process payment
   Future<void> processPayment(String userId) async {
     _state = ViewState.loading;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      // Step 1: Create payment record
+      // Step 1: create payment record
       _completedPayment = await _paymentRepository.processPayment(
         userId: userId,
         amount: _amount,
@@ -76,14 +74,11 @@ class PaymentViewModel extends ChangeNotifier {
       );
 
       if (_completedPayment?.isSuccessful != true) {
-        throw Exception('Payment processing failed');
+        throw Exception('Payment processing failed. Please try again.');
       }
 
-      // Step 2: If pass purchase, create pass record
-      if (_purpose == PaymentPurpose.dayPass ||
-          _purpose == PaymentPurpose.monthlyPass ||
-          _purpose == PaymentPurpose.annualPass) {
-        // Map purpose to passtype
+      // Step 2: if pass purchase → activate pass
+      if (_purpose != PaymentPurpose.singleTicket) {
         final passType = _mapPurposeToPassType(_purpose);
         await _passRepository.purchasePass(
           userId,
@@ -92,16 +87,26 @@ class PaymentViewModel extends ChangeNotifier {
         );
       }
 
-      // Step 3: If slot booking (single ticket), create booking record
       if (_purpose == PaymentPurpose.singleTicket &&
           _pendingSlotId != null &&
           _pendingStationId != null) {
+        final alreadyRiding = await _bookingRepository.hasCurrentBooking(
+          userId,
+        );
+        if (alreadyRiding) {
+          // Payment succeeded but booking blocked — inform user clearly
+          throw Exception(
+            'Payment was successful but you already have an active ride. '
+            'Return your current bike, then book again.',
+          );
+        }
+
         _createdBooking = await _bookingRepository.createBooking(
           userId: userId,
           bikeSlotId: _pendingSlotId!,
           stationId: _pendingStationId!,
           paymentId: _completedPayment!.id,
-          passId: null, // Single ticket, not a reusable pass
+          passId: null,
         );
       }
 
@@ -114,7 +119,6 @@ class PaymentViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper: Map PaymentPurpose to PassType
   PassType _mapPurposeToPassType(PaymentPurpose purpose) {
     return switch (purpose) {
       PaymentPurpose.singleTicket => PassType.single,
@@ -124,13 +128,17 @@ class PaymentViewModel extends ChangeNotifier {
     };
   }
 
-  // Error mapping
   String _mapErrorMessage(String error) {
-    if (error.contains('network')) {
-      return 'Network error. Please check your connection and try again';
-    } else if (error.contains('card')) {
-      return 'Card declined. Please check your card details';
+    final lower = error.toLowerCase();
+    if (lower.contains('network') || lower.contains('socket')) {
+      return 'No internet connection. Please check your network and retry.';
     }
-    return 'Payment failed. Please try again';
+    if (lower.contains('card') || lower.contains('declined')) {
+      return 'Card declined. Please check your details or try another method.';
+    }
+    if (lower.contains('current ride') || lower.contains('active ride')) {
+      return error.replaceFirst('Exception: ', '');
+    }
+    return 'Payment failed. Please try again.';
   }
 }

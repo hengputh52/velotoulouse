@@ -18,12 +18,18 @@ class BookingViewModel extends ChangeNotifier {
   Station? _currentStation;
   String? _errorMessage;
 
+
+  bool? _hasCurrentRide;
+
   ViewState get state => _state;
   Booking? get currentBooking => _currentBooking;
   Pass? get activePass => _activePass;
-  bool get hasActivePass => _activePass != null && _activePass!.isActive;
   Station? get currentStation => _currentStation;
   String? get errorMessage => _errorMessage;
+
+  bool get hasActivePass => _activePass != null && _activePass!.isActive;
+  bool get currentRide => _hasCurrentRide == true;
+  bool get rideCheckPending => _hasCurrentRide == null;
 
   BookingViewModel(
     this.bookingRepository,
@@ -31,7 +37,6 @@ class BookingViewModel extends ChangeNotifier {
     this.stationRepository,
   );
 
-  // Load active pass for user
   Future<void> loadActivePass(String userId) async {
     _state = ViewState.loading;
     _errorMessage = null;
@@ -47,7 +52,6 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Load station details
   Future<void> loadStation(String stationId) async {
     try {
       _currentStation = await stationRepository.getStationById(stationId);
@@ -57,7 +61,16 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Confirm booking with either pass or payment
+  Future<void> loadCurrentRideStatus(String userId) async {
+    try {
+      _hasCurrentRide = await bookingRepository.hasCurrentBooking(userId);
+    } catch (e) {
+      _errorMessage = 'Failed to check current ride: ${e.toString()}';
+      _hasCurrentRide = false;
+    }
+    notifyListeners();
+  }
+
   Future<void> confirmBooking({
     required String userId,
     required String bikeSlotId,
@@ -70,12 +83,14 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Validate: exactly one of paymentId or passId
       if ((paymentId != null && passId != null) ||
           (paymentId == null && passId == null)) {
-        throw Exception(
-          'Must provide either paymentId or passId, but not both',
-        );
+        throw Exception('Must provide either paymentId or passId, not both');
+      }
+
+      final alreadyRiding = await bookingRepository.hasCurrentBooking(userId);
+      if (alreadyRiding) {
+        throw Exception('Return your current bike before booking a new ride');
       }
 
       _currentBooking = await bookingRepository.createBooking(
@@ -86,15 +101,15 @@ class BookingViewModel extends ChangeNotifier {
         passId: passId,
       );
 
+      _hasCurrentRide = true;
       _state = ViewState.success;
     } catch (e) {
-      _errorMessage = 'Booking failed: ${e.toString()}';
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       _state = ViewState.error;
     }
     notifyListeners();
   }
 
-  // Cancel active booking
   Future<void> cancelBooking(String bookingId) async {
     _state = ViewState.loading;
     _errorMessage = null;
@@ -103,6 +118,7 @@ class BookingViewModel extends ChangeNotifier {
     try {
       await bookingRepository.cancelBooking(bookingId);
       _currentBooking = null;
+      _hasCurrentRide = false;
       _state = ViewState.success;
     } catch (e) {
       _errorMessage = 'Cancellation failed: ${e.toString()}';
@@ -111,11 +127,11 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Reset view model
   void reset() {
     _state = ViewState.idle;
     _currentBooking = null;
     _errorMessage = null;
+    _hasCurrentRide = null;
     notifyListeners();
   }
 }
